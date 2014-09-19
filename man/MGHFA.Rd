@@ -8,7 +8,8 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-MGHFA(data=NULL, gpar0=NULL, G=2, n=100, label =NULL  ,q=2,epsilon=1e-2 )
+MGHFA(data=NULL, gpar0=NULL, G=2, n=100, 
+label =NULL  ,q=2,epsilon=1e-2 , method="kmeans" )
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -32,9 +33,10 @@ MGHFA(data=NULL, gpar0=NULL, G=2, n=100, label =NULL  ,q=2,epsilon=1e-2 )
  \item{epsilon}{ (optional) A number specifying the epsilon value for the convergence criteria used in the EM algorithms. For each algorithm, the criterion is based on the difference between the log-likelihood at an iteration and an asymptotic estimate of the log-likelihood at that iteration. This asymptotic estimate is based on the Aitken acceleration and details are given in the References.
 %%     ~~Describe \code{init} here~~
 }
-
+ \item{method}{ ( optional)  A string indicatid the initializtion criteris, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" %%     ~~Describe \code{true.class} here~~
 }
-\details{ The arguments gpar0, if specified, is a list structure containing at least one p dimensional vector  mu, alpha and phi, a pxp matrix gamma, a pxp vector cpl containing omega and lambda, and a px2 matrix containing the vector omega0 and the vector lambda0.
+}
+\details{ The arguments gpar0, if specified, is a list structure containing at least one p dimensional vector  mu, alpha and phi, a pxp matrix gamma, a pxp vector cpl containing omega and lambda.
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{A list with components
@@ -57,15 +59,15 @@ Maintainer: Cristina Tortora <ctortora@uoguelph.ca>%%  ~~who you are~~
 }
 \examples{
 ##loading crabs data
-data(crabs)
+#data(crabs)
 
 ##model estimation
-model=MGHFA(data=crabs[,4:8],  G=2, n=40  ,q=2 )
+#model=MGHFA(data=crabs[,4:8],  G=2, n=40  ,q=2 )
 
 #result
-plot(model$loglik)
-table(model$map,crabs[,1])
-plot(crabs[,4:8],col=crabs[,1])
+#plot(model$loglik)
+#table(model$map,crabs[,1])
+#plot(crabs[,4:8],col=crabs[,1])
 
 ## Classification
 #70% belong to the training set

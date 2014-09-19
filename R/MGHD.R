@@ -1,6 +1,6 @@
 
 
-MGHD <- function(data=NULL, gpar0=NULL, G=2, n=10, label =NULL   ) {
+MGHD <- function(data=NULL, gpar0=NULL, G=2, n=10, label =NULL , method="kmeans"  ) {
 ##Expexctation Maximization estimation of GHD
 ##data
 ## G n clusters
@@ -14,14 +14,19 @@ MGHD <- function(data=NULL, gpar0=NULL, G=2, n=10, label =NULL   ) {
 	if ( G < 1) stop('G is not a positive integer')
 	if ( n < 1) stop('n is not a positive integer')
 	
-	if (is.null(gpar0)) gpar = igpar(data=data, g=G)
+	if (is.null(gpar0)) gpar = igpar(data=data, g=G, method=method)
 	else gpar  = gpar0
-	
-	loglik = numeric(n)
+		loglik = numeric(n)
+    for (i in 1:3) {
+        gpar = EMgrstepGH(data=data, gpar=gpar, v=1, label = label)	###parameter estimation
+		loglik[i] = llikGH(data, gpar)}
+        
 	for (i in 1:n) {
 		gpar = EMgrstepGH(data=data, gpar=gpar, v=1, label = label)	###parameter estimation	
 		loglik[i] = llikGH(data, gpar) ##likelyhood
 	}
-	val = list(loglik= loglik, gpar=gpar, z=weightsGH(data=data, gpar= gpar), map=MAPGH(data=data, gpar= gpar, label=label) )
+    pcol=ncol(data)
+    BIC=2*loglik[n]-log(nrow(data))*((G-1)+G*(2*pcol+2+pcol*(pcol-1)/2))
+	val = list(loglik= loglik, gpar=gpar, z=weightsGH(data=data, gpar= gpar), map=MAPGH(data=data, gpar= gpar, label=label),BIC=BIC )
 	return(val)
 }

@@ -1,15 +1,14 @@
-\name{MCGHD}
-\alias{MCGHD}
+\name{MSGHD}
+\alias{MSGHD}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Mixture of coalesced generalized hyperbolic distributions (MCGHD).
+\title{Mixture of multiple scaled generalized hyperbolic distributions (MSGHD).
 %%  ~~function to do ... ~~
 }
-\description{Carries out model-based clustering using the mixture of coalesced generalized hyperbolic distributions.
+\description{Carries out model-based clustering using the mixture of multiple scaled  generalized hyperbolic distributions.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-MCGHD(data=NULL, gpar0=NULL, G=2, max.iter=100, 
-epsilon=1e-2, label=NULL, method="kmeans" )
+MSGHD(data=NULL, gpar0=NULL, G=2, max.iter=100, label=NULL, method="kmeans" )
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -25,24 +24,20 @@ epsilon=1e-2, label=NULL, method="kmeans" )
   \item{max.iter}{(optional)  A numerical parameter giving  the maximum number of iterations each EM algorithm is allowed to use.
 %%     ~~Describe \code{model} here~~
 }
-  \item{epsilon}{ (optional) A number specifying the epsilon value for the convergence criteria used in the EM algorithms. For each algorithm, the criterion is based on the difference between the log-likelihood at an iteration and an asymptotic estimate of the log-likelihood at that iteration. This asymptotic estimate is based on the Aitken acceleration and details are given in the References.
-%%     ~~Describe \code{init} here~~
-}
+ 
   \item{label}{ ( optional)  A n dimensional vector, if label[i]=k then observation belongs to group k, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
 }
-  \item{method}{ ( optional)  A string indicatid the initializtion criteris, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" %%     ~~Describe \code{true.class} here~~
+  \item{method}{ ( optional) AA string indicating the initialization criteria, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" %%     ~~Describe \code{true.class} here~~
 }
-
 }
-\details{ The arguments gpar0, if specified, is a list structure containing at least one p dimensional vector  mu, alpha and phi, a pxp matrix gamma, a pxp vector cpl containing omega and lambda, and a px2 matrix containing the vector omega0 and the vector lambda0.
+\details{ The arguments gpar0, if specified, is a list structure containing at least one p dimensional vector  mu, alpha and phi, a pxp matrix gamma, and a px2 matrix containing the vector omega0 and the vector lambda0.
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{A list with components
 	\item{BIC}{Bayesian information criterion value.}
-	\item{gpar}{A list of the model parameters in the rotated space. }
+	\item{gpar}{A list of the model parameters }
 	\item{loglik}{The log-likelihood values.}
 	\item{map}{A vector of integers indicating the maximum a posteriori classifications for the best model.}
-	\item{par}{A list of the model parameters.}
 	\item{z}{A matrix giving the raw values upon which map is based.}
 %%  ~Describe the value returned
 %%  If it is a LIST, use
@@ -54,17 +49,17 @@ epsilon=1e-2, label=NULL, method="kmeans" )
 %% ~put references to the literature/web site here ~
 }
 \author{Cristina Tortora, Ryan P. Browne, Brian C. Franczak and Paul D. McNicholas.
-Maintainer: Cristina Tortora <ctortora@uoguelph.ca>%%  ~~who you are~~
+Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
 }
 \seealso{
- \code{\link{MGHD}},  \code{\link{MSGHD}}
+ \code{\link{MGHD}}
 }
 \examples{
 ##loading bankruptcy data
 data(bankruptcy)
 
 ##model estimation
-model=MCGHD(bankruptcy[,2:3],G=2)
+model=MSGHD(bankruptcy[,2:3],G=2)
 
 #result
 plot(bankruptcy[,2:3],col=model$map)

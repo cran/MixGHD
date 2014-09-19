@@ -8,7 +8,7 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-MGHD(data=NULL, gpar0=NULL, G=2, n=10,  label=NULL )
+MGHD(data=NULL, gpar0=NULL, G=2, n=10,  label=NULL,method="kmeans"  )
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -26,11 +26,14 @@ MGHD(data=NULL, gpar0=NULL, G=2, n=10,  label=NULL )
 }
    \item{label}{ ( optional)  A n dimensional vector, if label[i]=k then observation belongs to group k, If label[i]=0 then observation has no known group, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
 }
+ \item{method}{ ( optional) A string indicatid the initializtion criteris, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" %%     ~~Describe \code{true.class} here~~
+}
 }
 \details{ The arguments gpar0, if specified, is a list structure containing at least one p dimensional vector  mu, and alpha, a pxp matrix sigma, and a 1x2 matrix containing the vector omega and the vector lambda.
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{A list with components
+	\item{BIC}{Bayesian information criterion value.}
 	\item{gpar}{A list of the model parameters. }
 	\item{loglik}{The log-likelihood values.}
 	\item{map}{A vector of integers indicating the maximum a posteriori classifications for the best model.}
@@ -44,7 +47,7 @@ MGHD(data=NULL, gpar0=NULL, G=2, n=10,  label=NULL )
 \references{ R.P. Browne, and  P.D. McNicholas (2013). A Mixture of  Generalized Hyperbolic Distributions. Arxiv preprint arXiv:1305.1036
 %% ~put references to the literature/web site here ~
 }
-\author{Ryan P. Browne.
+\author{Ryan P. Browne, Cristina Tortora
 Maintainer: Cristina Tortora <ctortora@uoguelph.ca>%%  ~~who you are~~
 }
 \examples{
