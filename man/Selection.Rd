@@ -5,11 +5,11 @@
 %%  ~~function to do ... ~~
 }
 \description{Replicate a routine n times and gives as result the best solution, the available routine are:
-the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the mixture of generalized hyperbolic factor analyzers (MGHFA), the mixture of multiple scaled  generalized hyperbolic distributions (MSGHD) and the mixture of coaelesed generalized hyperbolic distributions (MCGHD).
+the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the mixture of generalized hyperbolic factor analyzers (MGHFA), the mixture of multiple scaled  generalized hyperbolic distributions (MSGHD), the mixture of convex multiple scaled  generalized hyperbolic distributions (cMSGHD) and the mixture of coaelesed generalized hyperbolic distributions (MCGHD).
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{Selection(data,label, G=2, niter=50,method="GHD",starting="kmeans",
-	max.iter=10,labelclassification=NULL,q=2)}
+	max.iter=10,labelclassification=NULL,q=2,scale=TRUE,criterion="ARI")}
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data}{ A n x p matrix or data frame such that rows correspond to observations and columns correspond to variables.
@@ -23,10 +23,10 @@ the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the
    \item{niter}{ A numerical parameter giving the number of replications.
 %%     ~~Describe \code{G} here~~
 }
-  \item{method}{ ( optional)  A string indicating the method to be used, if not specified GHD is used. Alternative methods are: MGHFA, MSGHD, MCGHD. %%     ~~Describe \code{true.class} here~~
+  \item{method}{ ( optional)  A string indicating the method to be used, if not specified GHD is used. Alternative methods are: MGHFA, MSGHD, cMSGHD, MCGHD. %%     ~~Describe \code{true.class} here~~
 }
   
-  \item{starting}{ ( optional)  A string indicating the initialization criteria, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" %%     ~~Describe \code{true.class} here~~
+  \item{starting}{ ( optional)  A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" %%     ~~Describe \code{true.class} here~~
 }
 \item{max.iter}{(optional)  A numerical parameter giving  the maximum number of iterations each EM algorithm is allowed to use.
 %%     ~~Describe \code{model} here~~
@@ -36,13 +36,17 @@ the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the
   \item{q}{(optional) used only if MGHFA method is selected. A numerical parameter giving the number of factors.
 %%     ~~Describe \code{G} here~~
 }
+ \item{scale}{ ( optional) A  logical value indicating whether or not the data should be scaled, true by defoult.%%     ~~Describe \code{true.class} here~~
 }
-\details{ Select the best model according to the adjusted rand index
+ \item{criterion}{ ( optional) A string indicating the selection criterion, if not specified the adjusted rand index (ARI)  is used. The alternative criterion is the BIC.%%     ~~Describe \code{true.class} here~~
+}
+}
+\details{ Select the best model according to the adjusted rand index or the BIC
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{A list with components
 	\item{model}{A list with the model parameters.}
-	\item{ARI }{A value indicating the adjusted rand index for the test set.}
+	\item{ARI }{A value indicating the adjusted rand index.}
 %%  ~Describe the value returned
 %%  If it is a LIST, use
 %%  \item{comp1 }{Description of 'comp1'}
@@ -57,7 +61,7 @@ C. Tortora,  P.D. McNicholas, and R.P. Browne (2014). A Mixture of Generalized H
 	Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
 }
 \seealso{
- \code{\link{MGHD}} \code{\link{MGHFA}} \code{\link{MSGHD}} \code{\link{MCGHD}}
+ \code{\link{MGHD}} \code{\link{MGHFA}} \code{\link{MSGHD}} \code{\link{cMSGHD}} \code{\link{MCGHD}}
 }
 \examples{
 ##loading bankruptcy data

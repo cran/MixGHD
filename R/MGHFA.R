@@ -1,9 +1,13 @@
 
-MGHFA<- function(data=NULL, gpar0=NULL, G=2, n=100, label =NULL  ,q=2,epsilon=1e-2, method="kmeans" ) {
+MGHFA<- function(data=NULL, gpar0=NULL, G=2, n=100, label =NULL  ,q=2,epsilon=1e-2, method="kmeans",scale=TRUE ) {
 ##Expexctation Maximization estimation of GHD
 ##data
 ## G n clusters
 ##n number of iterations
+if( scale==TRUE)
+{data=scale(data)}
+	pcol=ncol(data)
+    #  if (nrow(data)<((G-1)+G*(3*pcol+2+pcol*q-q*(q-1)/2)))stop('G is too big, number of parameters > n')
 	if (is.null(data)) stop('data is null')
 	if (nrow(data) == 1) stop('nrow(data) is equal to 1')
 	if (ncol(data) == 1) stop('ncol(data) is equal to 1; This function currently only works with multivariate data p > 1')
@@ -26,7 +30,7 @@ MGHFA<- function(data=NULL, gpar0=NULL, G=2, n=100, label =NULL  ,q=2,epsilon=1e
 		gpar = EMgrstepFA(data=data, gpar=gpar, v=1, label = label)	###parameter estimation	
 		loglik[i] = llikFA(data, gpar) ##likelyhood
 	}
-	pcol=ncol(data)
+
 	BIC=2*loglik[n]-log(nrow(data))*((G-1)+G*(3*pcol+2+pcol*q-q*(q-1)/2))
 	val = list(loglik= loglik, gpar=gpar, z=weightsFA(data=data, gpar= gpar), map=MAPFA(data=data, gpar= gpar, label=label) , BIC=BIC)
 	return(val)

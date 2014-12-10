@@ -1,7 +1,10 @@
 
-MCGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, epsilon=1e-2,  label=NULL, method="kmeans" ) {
+MCGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, epsilon=1e-2,  label=NULL, method="kmeans",scale=TRUE ) {
 	data=as.matrix(data)
-	data=scale(data)
+    if( scale==TRUE){
+        data=scale(data)}
+    	pcol=ncol(data)
+    if (nrow(data)<((G-1)+G*(4*pcol+2+pcol*(pcol-1)/2)))stop('G is too big, number of parameters > n')
 	if (is.null(data)) stop('data is null')
 	if (nrow(data) == 1) stop('nrow(data) is equal to 1')
 	if (ncol(data) == 1) stop('ncol(data) is equal to 1; This function currently only works with multivariate data p > 1')
@@ -28,7 +31,7 @@ MCGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, epsilon=1e-2,  label
 		loglik[i] = llik(data, gpar)
 		
 	}
-	pcol=ncol(data)
+
 	#BIC=2*loglik[max.iter]-log(nrow(data))*(2*(G-1)+G*(2*pcol+0.5*pcol*(pcol-1))+G*2*pcol+G*2)
     BIC=2*loglik[max.iter]-log(nrow(data))*((G-1)+G*(4*pcol+2+pcol*(pcol-1)/2))
 

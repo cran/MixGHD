@@ -4,24 +4,24 @@
 \title{Discriminant analysis using the mixture of  generalized hyperbolic distributions.
 %%  ~~function to do ... ~~
 }
-\description{Carries out model-based discriminant analysis using 4 different models: the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the mixture of generalized hyperbolic factor analyzers (MGHFA), the mixture of multiple scaled  generalized hyperbolic distributions (MSGHD) and the mixture of coaelesed generalized hyperbolic distributions (MCGHD).
+\description{Carries out model-based discriminant analysis using 5 different models: the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the mixture of generalized hyperbolic factor analyzers (MGHFA), the mixture of multiple scaled  generalized hyperbolic distributions (MSGHD),the mixture of convex multiple scaled  generalized hyperbolic distributions (cMSGHD) and the mixture of coaelesed generalized hyperbolic distributions (MCGHD).
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-DA(training,traininglabel,test,testlabel, method="GHD",starting="kmeans",max.iter=10,q=2)}
+DA(train,trainL,test,testL,method="GHD",starting="kmeans",max.iter=10,q=2,scale=TRUE)}
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{training}{ A n1 x p matrix or data frame such that rows correspond to observations and columns correspond to variables of the training data set.
+  \item{train}{ A n1 x p matrix or data frame such that rows correspond to observations and columns correspond to variables of the training data set.
 %%     ~~Describe \code{x} here~~
 }
-\item{traininglabel}{ A n1 dimensional vector of membership for the units of the training set. If label[i]=k then observation belongs to group k. %%     ~~Describe \code{true.class} here~~
+\item{trainL}{ A n1 dimensional vector of membership for the units of the training set. If label[i]=k then observation belongs to group k. %%     ~~Describe \code{true.class} here~~
 }
   \item{test}{ A n2 x p matrix or data frame such that rows correspond to observations and columns correspond to variables of the test data set.
 %%     ~~Describe \code{x} here~~
 }
-\item{testlabel}{ A n2 dimensional vector of membership for the units of the test set. If label[i]=k then observation belongs to group k. %%     ~~Describe \code{true.class} here~~
+\item{testL}{ A n2 dimensional vector of membership for the units of the test set. If label[i]=k then observation belongs to group k. %%     ~~Describe \code{true.class} here~~
 }
-  \item{method}{ ( optional)  A string indicatid the method to be used form discriminant analysis , if not specified GHD is used. Alternative methods are: MGHFA, MSGHD, MCGHD. %%     ~~Describe \code{true.class} here~~
+  \item{method}{ ( optional)  A string indicatid the method to be used form discriminant analysis , if not specified GHD is used. Alternative methods are: MGHFA, MSGHD, cMSGHD, MCGHD. %%     ~~Describe \code{true.class} here~~
 }
   
   \item{starting}{ ( optional)  A string indicatid the initializtion criteris, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" %%     ~~Describe \code{true.class} here~~
@@ -31,6 +31,8 @@ DA(training,traininglabel,test,testlabel, method="GHD",starting="kmeans",max.ite
 }
   \item{q}{(optional) used only if MGHFA method is selected. A numerical parameter giving the number of factors.
 %%     ~~Describe \code{G} here~~
+}
+  \item{scale}{ ( optional) A  logical value indicating whether or not the data should be scaled, true by default.%%     ~~Describe \code{true.class} here~~
 }
 }
 \value{A list with components
@@ -51,7 +53,7 @@ C. Tortora,  P.D. McNicholas, and R.P. Browne (2014). A Mixture of Generalized H
 	Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
 }
 \seealso{
- \code{\link{MGHD}} \code{\link{MGHFA}} \code{\link{MSGHD}} \code{\link{MCGHD}}
+ \code{\link{MGHD}} \code{\link{MGHFA}} \code{\link{MSGHD}} \code{\link{cMSGHD}} \code{\link{MCGHD}}
 }
 \examples{
 ##loading crabs data

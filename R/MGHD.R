@@ -1,11 +1,14 @@
 
 
-MGHD <- function(data=NULL, gpar0=NULL, G=2, n=10, label =NULL , method="kmeans"  ) {
+MGHD <- function(data=NULL, gpar0=NULL, G=2, n=10, label =NULL , method="kmeans" ,scale=TRUE ) {
 ##Expexctation Maximization estimation of GHD
 ##data
 ## G n clusters
 ##n number of iterations
-	data=scale(as.matrix(data))
+if( scale==TRUE){
+	data=scale(as.matrix(data))}
+    pcol=ncol(data)
+    if (nrow(data)<((G-1)+G*(2*pcol+2+pcol*(pcol-1)/2)))stop('G is too big, number of parameters > n')
 	if (is.null(data)) stop('data is null')
 	if (nrow(data) == 1) stop('nrow(data) is equal to 1')
 	if (ncol(data) == 1) stop('ncol(data) is equal to 1; This function currently only works with multivariate data p > 1')
@@ -25,7 +28,7 @@ MGHD <- function(data=NULL, gpar0=NULL, G=2, n=10, label =NULL , method="kmeans"
 		gpar = EMgrstepGH(data=data, gpar=gpar, v=1, label = label)	###parameter estimation	
 		loglik[i] = llikGH(data, gpar) ##likelyhood
 	}
-    pcol=ncol(data)
+
     BIC=2*loglik[n]-log(nrow(data))*((G-1)+G*(2*pcol+2+pcol*(pcol-1)/2))
 	val = list(loglik= loglik, gpar=gpar, z=weightsGH(data=data, gpar= gpar), map=MAPGH(data=data, gpar= gpar, label=label),BIC=BIC )
 	return(val)

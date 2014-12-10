@@ -1390,7 +1390,7 @@ rmgparMS <- function(g=NULL, p=NULL,data=NULL, method="kmeans") {
     }
     else{ l=kmeans(data,g)
         l=l$centers}
-		return(l)
+    return(l)
 }
 
 
@@ -1407,7 +1407,7 @@ rgparMS <- function(g=NULL, p=NULL,data, method="kmeans") {
 rparMS <- function(p=NULL,l,k) {
 	par = list()
 	par$mu =l[k,] #rnorm(p,0,.01);
-	par$sigma  = rep(1,p);
+	par$phi  = rep(1,p);
 	par$alpha = rnorm(p,0,.01);
 	par$cpl = cbind( rep(1,p), rep(-1/2,p))
     #	par$gam   = diag( rep(1,p) )
@@ -1455,7 +1455,7 @@ dmsghypMS <- function(y, par, log=FALSE) {
     # x is a n x p matrix
     x     = y %*% (par$gam)
     mu    = par$mu;
-    sigma = par$sigma;
+    sigma = par$phi;
     alpha = par$alpha;
     d = length(mu); chi = par$cpl[,1]; psi = par$cpl[,1];
     lambda = par$cpl[,2];
@@ -1488,7 +1488,7 @@ gig2pMS <- function(sr2=NULL, par=NULL) {
 	# returns the same as gig
     
 	omega = exp(log(par$cpl[,1]) )
-	a1 = omega + par$alpha^2/par$sigma   # vector
+	a1 = omega + par$alpha^2/par$phi   # vector
 	B1 = sweep(sr2, 2, omega, "+") # matrix
 	v1 = par$cpl[,2]-1/2 # vector
     
@@ -1502,15 +1502,15 @@ updatemaScplpMS <- function(y=NULL, par=NULL, weights=NULL, alpha.known=NULL, v=
 	if (is.null(weights)) weights=rep(1,nrow(x))
 	
 	x = y %*% (par$gam)
-	sr2= sweep( sweep(x,2,par$mu,"-")^2, 2, 1/par$sigma, FUN="*")
+	sr2= sweep( sweep(x,2,par$mu,"-")^2, 2, 1/par$phi, FUN="*")
 	abc = gig2pMS(sr2=sr2, par=par)
     
     #	new.gam= par$gam
-	if (runif(1) > 1/2) new.gam = updategam2MS(gam0=par$gam, y=y, sigma=par$sigma, alpha=par$alpha, mu=par$mu, wt=weights, invW= abc$invW)
-	else new.gam = updategam1MS(gam0=par$gam, y=y, sigma=par$sigma, alpha=par$alpha, mu=par$mu, wt=weights, invW= abc$invW)
-    #new.gam = update.gam1(gam0=par$gam, y=y, sigma=par$sigma, alpha=par$alpha, mu=par$mu, wt=weights, invW= abc$invW)
+	if (runif(1) > 1/2) new.gam = updategam2MS(gam0=par$gam, y=y, sigma=par$phi, alpha=par$alpha, mu=par$mu, wt=weights, invW= abc$invW)
+	else new.gam = updategam1MS(gam0=par$gam, y=y, sigma=par$phi, alpha=par$alpha, mu=par$mu, wt=weights, invW= abc$invW)
+    #new.gam = update.gam1(gam0=par$gam, y=y, sigma=par$phi, alpha=par$alpha, mu=par$mu, wt=weights, invW= abc$invW)
 	x = y %*% (new.gam)
-    #	sr2= sweep( sweep(x,2,par$mu,"-")^2, 2, 1/par$sigma, FUN="*")
+    #	sr2= sweep( sweep(x,2,par$mu,"-")^2, 2, 1/par$phi, FUN="*")
     #print(par$cpl)
     #	abc = gig2p(sr2=sr2, par=par)
     
@@ -1549,7 +1549,7 @@ updatemaScplpMS <- function(y=NULL, par=NULL, weights=NULL, alpha.known=NULL, v=
     #	new.gam = update.gam2(gam0=par$gam, y=y, sigma=sigma.new, alpha=alpha.new, mu=mu.new, wt=weights, invW= abc$invW)
     #	new.gam = update.gam2(gam0=new.gam, x=y %*% (new.gam), sigma=sigma.new, alpha=alpha.new, mu=mu.new, wt=weights, invW= abc$invW)
     
-	new.par = list(mu=mu.new, alpha=alpha.new, sigma=sigma.new, cpl=cpl.new, gam= new.gam )
+	new.par = list(mu=mu.new, alpha=alpha.new,phi=sigma.new, cpl=cpl.new, gam= new.gam )
 	return(new.par)
 }
 
@@ -1662,14 +1662,14 @@ MAPMS <- function(data, gpar, label=NULL) {
 	if (!is.null(label)) w = combinewk(weights=w, label= label)
 	z = apply(w, 1, function(z) { z=(1:length(z))[z==max(z)]; return(z[1]) })
 	z = as.numeric(z)
-	return( z)	
+	return( z)
 }
 
 #################################################################################################################################
 #################################################################################################################################
 #################################################################################################################################
 #################################################################################################################################
-###                                                            rMSGHD                                                          ###
+###                                                            cMSGHD                                                          ###
 #################################################################################################################################
 #################################################################################################################################
 #################################################################################################################################
@@ -1707,7 +1707,7 @@ rgparMSr <- function(g=NULL, p=NULL,data, method="kmeans") {
 rparMSr <- function(p=NULL,l,k) {
 	par = list()
 	par$mu =l[k,] #rnorm(p,0,.01);
-	par$sigma  = rep(1,p);
+	par$phi  = rep(1,p);
 	par$alpha = rnorm(p,0,.01);
 	par$cpl = cbind( rep(1,p), rep(1,p))
     #	par$gam   = diag( rep(1,p) )
@@ -1736,15 +1736,15 @@ updatemaScplpMSr <- function(y=NULL, par=NULL, weights=NULL, alpha.known=NULL, v
 	if (is.null(weights)) weights=rep(1,nrow(x))
 	
 	x = y %*% (par$gam)
-	sr2= sweep( sweep(x,2,par$mu,"-")^2, 2, 1/par$sigma, FUN="*")
+	sr2= sweep( sweep(x,2,par$mu,"-")^2, 2, 1/par$phi, FUN="*")
 	abc = gig2pMS(sr2=sr2, par=par)
     
     #	new.gam= par$gam
-	if (runif(1) > 1/2) new.gam = updategam2MS(gam0=par$gam, y=y, sigma=par$sigma, alpha=par$alpha, mu=par$mu, wt=weights, invW= abc$invW)
-	else new.gam = updategam1MS(gam0=par$gam, y=y, sigma=par$sigma, alpha=par$alpha, mu=par$mu, wt=weights, invW= abc$invW)
-    #new.gam = update.gam1(gam0=par$gam, y=y, sigma=par$sigma, alpha=par$alpha, mu=par$mu, wt=weights, invW= abc$invW)
+	if (runif(1) > 1/2) new.gam = updategam2MS(gam0=par$gam, y=y, sigma=par$phi, alpha=par$alpha, mu=par$mu, wt=weights, invW= abc$invW)
+	else new.gam = updategam1MS(gam0=par$gam, y=y, sigma=par$phi, alpha=par$alpha, mu=par$mu, wt=weights, invW= abc$invW)
+    #new.gam = update.gam1(gam0=par$gam, y=y, sigma=par$phi, alpha=par$alpha, mu=par$mu, wt=weights, invW= abc$invW)
 	x = y %*% (new.gam)
-    #	sr2= sweep( sweep(x,2,par$mu,"-")^2, 2, 1/par$sigma, FUN="*")
+    #	sr2= sweep( sweep(x,2,par$mu,"-")^2, 2, 1/par$phi, FUN="*")
     #print(par$cpl)
     #	abc = gig2p(sr2=sr2, par=par)
     
@@ -1784,6 +1784,6 @@ updatemaScplpMSr <- function(y=NULL, par=NULL, weights=NULL, alpha.known=NULL, v
     #	new.gam = update.gam2(gam0=new.gam, x=y %*% (new.gam), sigma=sigma.new, alpha=alpha.new, mu=mu.new, wt=weights, invW= abc$invW)
     for(i in 1:nrow(cpl.new)){
         if( cpl.new[i,2]<1){cpl.new[i,2]=1}}
-	new.par = list(mu=mu.new, alpha=alpha.new, sigma=sigma.new, cpl=cpl.new, gam= new.gam )
+	new.par = list(mu=mu.new, alpha=alpha.new, phi=sigma.new, cpl=cpl.new, gam= new.gam )
 	return(new.par)
 }
