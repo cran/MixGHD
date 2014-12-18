@@ -9,13 +9,13 @@ the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{Selection(data,label, G=2, niter=50,method="GHD",starting="kmeans",
-	max.iter=10,labelclassification=NULL,q=2,scale=TRUE,criterion="ARI")}
+	max.iter=10,labelcl=NULL,q=2,scale=TRUE,criterion="ARI")}
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data}{ A n x p matrix or data frame such that rows correspond to observations and columns correspond to variables.
 %%     ~~Describe \code{x} here~~
 }
-\item{label}{  A n dimensional vector of known membership, if label[i]=k. Used to select the solution.  %%     ~~Describe \code{true.class} here~~
+\item{label}{  A n dimensional vector of known membership, if label[i]=k unit i belongs to cluster k. It is used to select the solution.   %%     ~~Describe \code{true.class} here~~
 }
    \item{G}{ A numerical parameter giving the number of clusters.
 %%     ~~Describe \code{G} here~~
@@ -31,7 +31,7 @@ the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the
 \item{max.iter}{(optional)  A numerical parameter giving  the maximum number of iterations each EM algorithm is allowed to use.
 %%     ~~Describe \code{model} here~~
 }
-\item{labelclassification}{ (optional) A n dimensional vector of membership, if label[i]=k then observation belongs to group k, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
+\item{labelcl}{ (optional) A n dimensional vector of membership, if labelcl[i]=k then observation belongs to group k, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
 }
   \item{q}{(optional) used only if MGHFA method is selected. A numerical parameter giving the number of factors.
 %%     ~~Describe \code{G} here~~

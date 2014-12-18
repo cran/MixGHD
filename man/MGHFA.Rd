@@ -9,7 +9,7 @@
 }
 \usage{
 MGHFA(data=NULL, gpar0=NULL, G=2, n=100, 
-label =NULL  ,q=2,epsilon=1e-2 , method="kmeans",scale=TRUE )
+label =NULL  ,q=2,epsilon=1e-2 , method="kmeans", scale=TRUE )
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -33,12 +33,12 @@ label =NULL  ,q=2,epsilon=1e-2 , method="kmeans",scale=TRUE )
  \item{epsilon}{ (optional) A number specifying the epsilon value for the convergence criteria used in the EM algorithms. For each algorithm, the criterion is based on the difference between the log-likelihood at an iteration and an asymptotic estimate of the log-likelihood at that iteration. This asymptotic estimate is based on the Aitken acceleration and details are given in the References.
 %%     ~~Describe \code{init} here~~
 }
- \item{method}{ ( optional)  A string indicatidng the initialization criteria, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" %%     ~~Describe \code{true.class} here~~
+ \item{method}{ ( optional)  A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" clustering %%     ~~Describe \code{true.class} here~~
 }
  \item{scale}{ ( optional) A  logical value indicating whether or not the data should be scaled, true by default.%%     ~~Describe \code{true.class} here~~
 }
 }
-\details{ The arguments gpar0, if specified, is a list structure containing at least one p dimensional vector  mu, alpha and phi, a pxp matrix gamma, a pxp vector cpl containing omega and lambda.
+\details{ The arguments gpar0, if specified, is a list structure containing at least one p dimensional vector  mu, alpha and phi, a pxp matrix gamma, a 2 dimensional vector cpl containing omega and lambda.
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{A list with components

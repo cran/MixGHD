@@ -14,17 +14,17 @@ DA(train,trainL,test,testL,method="GHD",starting="kmeans",max.iter=10,q=2,scale=
   \item{train}{ A n1 x p matrix or data frame such that rows correspond to observations and columns correspond to variables of the training data set.
 %%     ~~Describe \code{x} here~~
 }
-\item{trainL}{ A n1 dimensional vector of membership for the units of the training set. If label[i]=k then observation belongs to group k. %%     ~~Describe \code{true.class} here~~
+\item{trainL}{ A n1 dimensional vector of membership for the units of the training set. If trainL[i]=k then observation belongs to group k. %%     ~~Describe \code{true.class} here~~
 }
   \item{test}{ A n2 x p matrix or data frame such that rows correspond to observations and columns correspond to variables of the test data set.
 %%     ~~Describe \code{x} here~~
 }
-\item{testL}{ A n2 dimensional vector of membership for the units of the test set. If label[i]=k then observation belongs to group k. %%     ~~Describe \code{true.class} here~~
+\item{testL}{ A n2 dimensional vector of membership for the units of the test set. If testL[i]=k then observation belongs to group k. %%     ~~Describe \code{true.class} here~~
 }
-  \item{method}{ ( optional)  A string indicatid the method to be used form discriminant analysis , if not specified GHD is used. Alternative methods are: MGHFA, MSGHD, cMSGHD, MCGHD. %%     ~~Describe \code{true.class} here~~
+  \item{method}{ ( optional)  A string indicating the method to be used form discriminant analysis , if not specified GHD is used. Alternative methods are: MGHFA, MSGHD, cMSGHD, MCGHD. %%     ~~Describe \code{true.class} here~~
 }
   
-  \item{starting}{ ( optional)  A string indicatid the initializtion criteris, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" %%     ~~Describe \code{true.class} here~~
+  \item{starting}{ ( optional)  A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" clustering%%     ~~Describe \code{true.class} here~~
 }
 \item{max.iter}{(optional)  A numerical parameter giving  the maximum number of iterations each EM algorithm is allowed to use.
 %%     ~~Describe \code{model} here~~

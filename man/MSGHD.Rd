@@ -8,7 +8,7 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-MSGHD(data=NULL, gpar0=NULL, G=2, max.iter=100, label=NULL, method="kmeans" ,scale=TRUE)
+MSGHD(data=NULL, gpar0=NULL, G=2, max.iter=100, label=NULL, method="kmeans", scale=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -27,12 +27,12 @@ MSGHD(data=NULL, gpar0=NULL, G=2, max.iter=100, label=NULL, method="kmeans" ,sca
  
   \item{label}{ ( optional)  A n dimensional vector, if label[i]=k then observation belongs to group k, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
 }
-  \item{method}{ ( optional) AA string indicating the initialization criteria, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" %%     ~~Describe \code{true.class} here~~
+  \item{method}{ ( optional) A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" clustering%%     ~~Describe \code{true.class} here~~
 }
  \item{scale}{ ( optional) A  logical value indicating whether or not the data should be scaled, true by default.%%     ~~Describe \code{true.class} here~~
 }
 }
-\details{ The arguments gpar0, if specified, is a list structure containing at least one p dimensional vector  mu, alpha and phi, a pxp matrix gamma, and a px2 matrix containing the vector omega0 and the vector lambda0.
+\details{ The arguments gpar0, if specified, is a list structure containing at least one p dimensional vector  mu, alpha and phi, a pxp matrix gamma, and a px2 matrix cpl containing the vector omega and the vector lambda.
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{A list with components
