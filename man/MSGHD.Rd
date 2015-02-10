@@ -7,8 +7,7 @@
 \description{Carries out model-based clustering using the mixture of multiple scaled  generalized hyperbolic distributions.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
-\usage{
-MSGHD(data=NULL, gpar0=NULL, G=2, max.iter=100, label=NULL, method="kmeans", scale=TRUE)
+\usage{MSGHD(data=NULL,gpar0=NULL,G=2,max.iter=100,label=NULL,eps=1e-2,method="km",scale=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -26,6 +25,9 @@ MSGHD(data=NULL, gpar0=NULL, G=2, max.iter=100, label=NULL, method="kmeans", sca
 }
  
   \item{label}{ ( optional)  A n dimensional vector, if label[i]=k then observation belongs to group k, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
+}
+ \item{eps}{ (optional) A number specifying the epsilon value for the convergence criteria used in the EM algorithms. For each algorithm, the criterion is based on the difference between the log-likelihood at an iteration and an asymptotic estimate of the log-likelihood at that iteration. This asymptotic estimate is based on the Aitken acceleration.
+%%     ~~Describe \code{init} here~~
 }
   \item{method}{ ( optional) A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" clustering%%     ~~Describe \code{true.class} here~~
 }

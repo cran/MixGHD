@@ -1,41 +1,41 @@
-DA<-function(train,trainL,test,testL,method="GHD",starting="kmeans",max.iter=10,q=2,scale=TRUE){
+DA<-function(train,trainL,test,testL,method="GHD",starting="km",max.iter=10,eps=1e-2,q=2,scale=TRUE){
     if (min(trainL)==0) stop('training label equal to 0')
 
     G=max(trainL)
   if(method=="MGHFA"){
 
-      model=MGHFA(train,G=G,method=starting,label=trainL,q=q,scale=scale)
-      testmodel=MAPFA(scale(test),gpar=model$gpar)
-      aritrain=adjustedRandIndex(model$map,trainL)
+      res=MGHFA(train,G=G,method=starting,label=trainL,max.iter=max.iter,q=q,scale=scale,eps=eps)
+      testmodel=MAPFA(scale(test),gpar=res$gpar)
+      aritrain=adjustedRandIndex(res$map,trainL)
       aritest=adjustedRandIndex(testmodel,testL)
       
     }
   else if(method=="MSGHD"){
 
-    model=MSGHD(train,G=G,max.iter=max.iter,method=starting,label=trainL,scale=scale)
-      testmodel=MAPMS(scale(test),gpar=model$gpar)
-      aritrain=adjustedRandIndex(model$map,trainL)
+    res=MSGHD(train,G=G,max.iter=max.iter,method=starting,label=trainL,scale=scale,eps=eps)
+      testmodel=MAPMS(scale(test),gpar=res$gpar)
+      aritrain=adjustedRandIndex(res$map,trainL)
       aritest=adjustedRandIndex(testmodel,testL)  }
   else if(method=="MCGHD"){
    
-      model=MCGHD(train,G=G,max.iter=max.iter,method=starting,label=trainL,scale=scale)
-      testmodel=MAP(scale(test),gpar=model$gpar)
-      aritrain=adjustedRandIndex(model$map,trainL)
+      res=MCGHD(train,G=G,max.iter=max.iter,method=starting,label=trainL,scale=scale,eps=eps)
+      testmodel=MAP(scale(test),gpar=res$gpar)
+      aritrain=adjustedRandIndex(res$map,trainL)
       aritest=adjustedRandIndex(testmodel,testL)
       }
   else if(method=="cMSGHD"){
       
-      model=cMSGHD(train,G=G,max.iter=max.iter,method=starting,label=trainL,scale=scale)
-      testmodel=MAPMS(scale(test),gpar=model$gpar)
-      aritrain=adjustedRandIndex(model$map,trainL)
+      res=cMSGHD(train,G=G,max.iter=max.iter,method=starting,label=trainL,scale=scale,eps=eps)
+      testmodel=MAPMS(scale(test),gpar=res$gpar)
+      aritrain=adjustedRandIndex(res$map,trainL)
       aritest=adjustedRandIndex(testmodel,testL)
   }
   else {
 
-      res=MGHD(train,G=G,n=max.iter,method=starting,label=trainL,scale=scale)
+      res=MGHD(train,G=G,max.iter=max.iter,method=starting,label=trainL,scale=scale,eps=eps)
       testmodel=MAPGH(scale(test),gpar=res$gpar)
       aritrain=adjustedRandIndex(res$map,trainL)
       aritest=adjustedRandIndex(testmodel,testL)
   }
-  return(list(model=model,testMembership=testmodel,ARItest=aritest,ARItrain=aritrain))
+  return(list(model=res,testMembership=testmodel,ARItest=aritest,ARItrain=aritrain))
 }

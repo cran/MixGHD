@@ -9,7 +9,7 @@ the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{Selection(data,label, G=2, niter=50,method="GHD",starting="kmeans",
-	max.iter=10,labelcl=NULL,q=2,scale=TRUE,criterion="ARI")}
+	max.iter=10,eps=1e-2,labelcl=NULL,q=2,scale=TRUE,criterion="ARI")}
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data}{ A n x p matrix or data frame such that rows correspond to observations and columns correspond to variables.
@@ -31,12 +31,15 @@ the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the
 \item{max.iter}{(optional)  A numerical parameter giving  the maximum number of iterations each EM algorithm is allowed to use.
 %%     ~~Describe \code{model} here~~
 }
+ \item{eps}{ (optional) A number specifying the epsilon value for the convergence criteria used in the EM algorithms. For each algorithm, the criterion is based on the difference between the log-likelihood at an iteration and an asymptotic estimate of the log-likelihood at that iteration. This asymptotic estimate is based on the Aitken acceleration.
+%%     ~~Describe \code{init} here~~
+}
 \item{labelcl}{ (optional) A n dimensional vector of membership, if labelcl[i]=k then observation belongs to group k, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
 }
   \item{q}{(optional) used only if MGHFA method is selected. A numerical parameter giving the number of factors.
 %%     ~~Describe \code{G} here~~
 }
- \item{scale}{ ( optional) A  logical value indicating whether or not the data should be scaled, true by defoult.%%     ~~Describe \code{true.class} here~~
+ \item{scale}{ ( optional) A  logical value indicating whether or not the data should be scaled, true by default.%%     ~~Describe \code{true.class} here~~
 }
  \item{criterion}{ ( optional) A string indicating the selection criterion, if not specified the adjusted rand index (ARI)  is used. The alternative criterion is the BIC.%%     ~~Describe \code{true.class} here~~
 }

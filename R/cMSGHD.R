@@ -1,5 +1,5 @@
 
-cMSGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL , method="kmeans" ,scale=TRUE) {
+cMSGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL ,eps=1e-2, method="km" ,scale=TRUE) {
     data=as.matrix(data)
     if( scale==TRUE)
     {data=scale(data)}
@@ -7,7 +7,7 @@ cMSGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL , metho
         # if (nrow(data)<((G-1)+G*(4*pcol+pcol*(pcol-1)/2)))stop('G is too big, number of parameters > n')
     if (is.null(data)) stop('data is null')
     if (nrow(data) == 1) stop('nrow(data) is equal to 1')
-    if (ncol(data) == 1) stop('ncol(data) is equal to 1; This function currently only works with multivariate data p > 1')
+    #  if (ncol(data) == 1) stop('ncol(data) is equal to 1; This function currently only works with multivariate data p > 1')
     if (any(is.na(data))) stop('No NAs allowed.')
     if (is.null(G)) stop('G is NULL')
     if ( G < 1) stop('G is not a positive integer')
@@ -17,7 +17,12 @@ cMSGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL , metho
     else gpar  = gpar0
     
     loglik = numeric(n)
-    for (i in 1:n) {
+    for (i in 1:3) {
+        gpar = EMgrstepMSr(data=data, gpar=gpar, v=1, label = label)
+        loglik[i] = llikMS(data, gpar)
+    }
+   	while ( ( getall(loglik[1:i]) > eps) & (i < (n) ) )  {
+		i = i+1
         gpar = EMgrstepMSr(data=data, gpar=gpar, v=1, label = label)
         loglik[i] = llikMS(data, gpar)
     }

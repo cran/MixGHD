@@ -8,8 +8,8 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-MGHFA(data=NULL, gpar0=NULL, G=2, n=100, 
-label =NULL  ,q=2,epsilon=1e-2 , method="kmeans", scale=TRUE )
+MGHFA(data=NULL, gpar0=NULL, G=2, max.iter=100, 
+label =NULL  ,q=2,eps=1e-2 , method="kmeans", scale=TRUE )
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -22,7 +22,7 @@ label =NULL  ,q=2,epsilon=1e-2 , method="kmeans", scale=TRUE )
   \item{G}{ A numerical parameter giving the number of clusters.
 %%     ~~Describe \code{G} here~~
 }
-  \item{n}{(optional) A numerical parameter giving the maximum number of iterations each EM algorithm is allowed to use.
+  \item{max.iter}{(optional) A numerical parameter giving the maximum number of iterations each EM algorithm is allowed to use.
 %%     ~~Describe \code{model} here~~
 }
   \item{label}{ ( optional)  A n dimensional vector, if label[i]=k then observation belongs to group k, If label[i]=0 then observation has no known group, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
@@ -30,7 +30,7 @@ label =NULL  ,q=2,epsilon=1e-2 , method="kmeans", scale=TRUE )
  \item{q}{ A numerical parameter giving the number of factors.
 %%     ~~Describe \code{G} here~~
 }
- \item{epsilon}{ (optional) A number specifying the epsilon value for the convergence criteria used in the EM algorithms. For each algorithm, the criterion is based on the difference between the log-likelihood at an iteration and an asymptotic estimate of the log-likelihood at that iteration. This asymptotic estimate is based on the Aitken acceleration and details are given in the References.
+ \item{eps}{ (optional) A number specifying the epsilon value for the convergence criteria used in the EM algorithms. For each algorithm, the criterion is based on the difference between the log-likelihood at an iteration and an asymptotic estimate of the log-likelihood at that iteration. This asymptotic estimate is based on the Aitken acceleration.
 %%     ~~Describe \code{init} here~~
 }
  \item{method}{ ( optional)  A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" clustering %%     ~~Describe \code{true.class} here~~
@@ -60,27 +60,17 @@ label =NULL  ,q=2,epsilon=1e-2 , method="kmeans", scale=TRUE )
 Maintainer: Cristina Tortora <ctortora@uoguelph.ca>%%  ~~who you are~~
 }
 \examples{
-##loading crabs data
-#data(crabs)
-
-##model estimation
-#model=MGHFA(data=crabs[,4:8],  G=2, n=40  ,q=2 )
-
-#result
-#plot(model$loglik)
-#table(model$map,crabs[,1])
-#plot(crabs[,4:8],col=crabs[,1])
-
 ## Classification
 #70% belong to the training set
 data(sonar)
  label=sonar[,61]
+ set.seed(135)
  a=round(runif(62)*207+1)
  label[a]=0
  
  
 ##model estimation
-model=MGHFA(data=sonar[,1:60],  G=2, n=50  ,q=2,label=label )
+model=MGHFA(data=sonar[,1:60],  G=2, max.iter=50  ,q=2,label=label )
 
 #result
 table(model$map,sonar[,61])

@@ -7,8 +7,7 @@
 \description{Carries out model-based discriminant analysis using 5 different models: the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the mixture of generalized hyperbolic factor analyzers (MGHFA), the mixture of multiple scaled  generalized hyperbolic distributions (MSGHD),the mixture of convex multiple scaled  generalized hyperbolic distributions (cMSGHD) and the mixture of coaelesed generalized hyperbolic distributions (MCGHD).
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
-\usage{
-DA(train,trainL,test,testL,method="GHD",starting="kmeans",max.iter=10,q=2,scale=TRUE)}
+\usage{DA(train,trainL,test,testL,method="GHD",starting="km",max.iter=10,eps=1e-2,q=2,scale=TRUE)}
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{train}{ A n1 x p matrix or data frame such that rows correspond to observations and columns correspond to variables of the training data set.
@@ -28,6 +27,9 @@ DA(train,trainL,test,testL,method="GHD",starting="kmeans",max.iter=10,q=2,scale=
 }
 \item{max.iter}{(optional)  A numerical parameter giving  the maximum number of iterations each EM algorithm is allowed to use.
 %%     ~~Describe \code{model} here~~
+}
+ \item{eps}{ (optional) A number specifying the epsilon value for the convergence criteria used in the EM algorithms. For each algorithm, the criterion is based on the difference between the log-likelihood at an iteration and an asymptotic estimate of the log-likelihood at that iteration. This asymptotic estimate is based on the Aitken acceleration.
+%%     ~~Describe \code{init} here~~
 }
   \item{q}{(optional) used only if MGHFA method is selected. A numerical parameter giving the number of factors.
 %%     ~~Describe \code{G} here~~

@@ -36,7 +36,7 @@ C. Tortora,  P.D. McNicholas, and R.P. Browne (2014). A Mixture of Generalized H
 \examples{
 ###model based clustering  using the mixture of generalized hyperbolic distributions
 data(crabs)
-modelGH=MGHD(data=crabs[,4:8],  G=2, n=50)
+modelGH=MGHD(data=crabs[,4:8],  G=2, max.iter=50)
 table(modelGH$map,crabs[,2])
 
 ##model based classification using the mixture of generalized hyperbolic factor analyzers
@@ -47,7 +47,7 @@ data(sonar)
  a=round(runif(62)*207+1)
  label[a]=0
  
-model=MGHFA(data=sonar[,1:60],  G=2, n=30  ,q=2,label=label )
+model=MGHFA(data=sonar[,1:60],  G=2, max.iter=30  ,q=2,label=label )
 table(model$map,sonar[,61])
 
 

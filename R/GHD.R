@@ -182,7 +182,11 @@ dmsghyp <- function(y, par, log=FALSE) {
 	lv2 = - (log(besselK( sqrt(chi*psi), nu=lambda, expon.scaled =TRUE)) - sqrt(chi*psi) )
 	lv3 = lambda/2*(log(psi)-log(chi) )
 	
-	val = apply(lx1 + lx2 + lx3, 1, sum) + sum(lv1 + lv2 + lv3)
+	if(ncol(y)==1){lx2=t(lx2)}
+    lx=lx1 +lx2 + lx3
+    #val = apply(lx1 + lx2 + lx3, 1, sum) + sum(lv1 + lv2 + lv3)
+    val = apply(lx, 1, sum) + sum(lv1 + lv2 + lv3)
+
 	if (!log) val = exp( val )
 	
 	return(val)
@@ -281,6 +285,12 @@ iweights <- function(data=NULL, gpar=NULL, v=1) {
 
 ###Bessel function
 logbesselKv <- function(x, y) { log(besselK(x=y, nu=x, expon.scaled=TRUE)) - log(y)}
+logbesselKvFA <- function(x, y) {
+    val = log(besselK(x=y, nu=x, expon.scaled=TRUE)) - y
+    sun = is.infinite(val)
+    val[sun] = besselK.nuAsym(x=y[sun], nu=abs(x[sun]), k.max=4, log=TRUE, expon.scaled=TRUE) - y[sun]
+    return(val)
+}
 besselKv    <- function(x, y) { besselK(x=y, nu=x)}
 
 
@@ -332,6 +342,7 @@ gigp <- function(a=NULL,B =NULL,v=NULL) {
 				   }, v=v ) )
 	
 	SB.a =  sqrt(sweep(B, 2, 1/a, "*" ))
+    if(nrow(Kv12)==1){Kv12=t(Kv12)}
 	W    = Kv12*SB.a	
 	invW = Kv12/SB.a - 2*sweep(1/B, 2, v, "*" )
 #print(cbind(rep(v,each=nrow(SaB)),as.numeric(SaB)) )
@@ -397,7 +408,7 @@ rmgpar <- function(g=NULL, p=NULL,data=NULL, method="kmeans") {
 	val = list()
 	#set.seed(142857)
     if(method=="modelBased"){
-    l=Mclust(data,G=2)$classification
+    l=Mclust(data,G=g)$classification
         l=BAR(data,l)}
     else if(method=="hierarchical"){
        l=(cutree(hclust(dist(data),"ward.D"), k=g))
@@ -475,7 +486,7 @@ updatemaScplp <- function(y=NULL, par=NULL, weights=NULL, iweights=NULL, alpha.k
 #########PHI		
 	
 	Num11 = 0
-	if(sum(iweights[,1]) != 0) Num11 = cov.wt(x=x, wt=(abc[,2]*weights*iweights[,1]), center=mu.new, method="ML")$cov*BU
+	if((sum(iweights[,1]) != 0) & sum(abc[,2]*weights*iweights[,1])!=0) Num11 = cov.wt(x=x, wt=(abc[,2]*weights*iweights[,1]), center=mu.new, method="ML")$cov*BU
 	r = as.numeric(Z.x - mu.new)
 	m = as.numeric(alpha.new)
 	Num12 = outer(alpha.new,r)
@@ -562,6 +573,7 @@ updateol <- function(ol=NULL, ABC=NULL, n=1) {
 			ol[2] = 0
 		} else {
 #print( c(1, ol[2], ol[1] ) )
+#if(ol[1]<=0){ol[1]=eps}
 			bv = grad( logbesselKv, x=ol[2], y=ol[1], method="Richardson",  method.args=list(eps=1e-8, d=0.0001, zero.tol=sqrt(.Machine$double.eps/7e-7), r=6, v=2, show.details=FALSE))
 			ol[2] = ABC[3]*(ol[2]/bv)
 		}
@@ -604,6 +616,7 @@ for (i in 1:n) {
 if (ABC[3] == 0) {
 ol[2] = 0
 } else {
+    # if(ol[1]<=0){ol[1]=eps}
 bv = grad( logbesselKv, x=ol[2], y=ol[1], method="Richardson",  method.args=list(eps=1e-8, d=0.0001, zero.tol=sqrt(.Machine$double.eps/7e-7), r=6, v=2, show.details=FALSE))
 ol[2] = ABC[3]*(ol[2]/bv)
 }
@@ -616,7 +629,7 @@ Rn = RlamU(omg0,lam=-lam0)
 f1 = Rp + Rn - (ABC[1]+ABC[2])
 f2 = ( Rp^2 - (2*lam0+1)/omg0 *Rp -1 ) + ( Rn^2 - (2*(-1*lam0)+1)/omg0 *Rn -1 ) 
 # note, it is suppose to be f1/2 and f2/2 
-ol[1] = ol[1] - f1/f2
+if ( ol[1] - f1/f2 > 0 ) ol[1] = ol[1] - f1/f2
 }
 
 return(ol)
@@ -643,7 +656,16 @@ wty2 = sweep(y,1,wt*ut[,1],"*")
 F0t = t( x * Bs ) %*% wty + t(x*Bs2) %*% wty2
 e2 = apply(Bs,1,max)*wt*ut[2]
 e1 = max(Bs)*wt*ut[1]
-F1t = ((cov.wt(y, center=rep(0,ncol(y)), wt=e2, method="ML" )$cov*sum(e2)) %*% (gam0)) + ((cov.wt(y, center=rep(0,ncol(y)), wt=e1, method="ML" )$cov*sum(e1)) %*% (gam0))
+if(sum(e2)==0){    F1t =  ((cov.wt(y, center=rep(0,ncol(y)), wt=e1, method="ML" )$cov*sum(e1)) %*% (gam0))
+
+} else {
+    if(sum(e1)==0){F1t = ((cov.wt(y, center=rep(0,ncol(y)), wt=e2, method="ML" )$cov*sum(e2)) %*% (gam0))
+
+    } else {
+    F1t = ((cov.wt(y, center=rep(0,ncol(y)), wt=e2, method="ML" )$cov*sum(e2)) %*% (gam0)) + ((cov.wt(y, center=rep(0,ncol(y)), wt=e1, method="ML" )$cov*sum(e1)) %*% (gam0))
+   
+    }
+}
 
 v  = sweep(sweep(Bs, 2, mu, "*"), 2, alpha/phi, "+")
 v1 = (Bs2*mu + alpha/phi)
@@ -680,7 +702,10 @@ F0t = t( x * Bs ) %*% wty + t(x*Bs2) %*% wty2
 e1 = apply(y^2, 1, sum)*wt*ut[,1]
 e2 = apply(y^2, 1, sum)*wt*ut[,2]
 
-F1t = diag(apply(Bs, 2, weighted.sum, wt = e2)) %*% t(gam0) + weighted.sum(Bs2,wt=e1)*t(gam0)
+if(ncol(y)==1){F1t = (apply(Bs, 2, weighted.sum, wt = e2)) %*% t(gam0) + weighted.sum(Bs2,wt=e1)*t(gam0)}
+else{
+    F1t = diag(apply(Bs, 2, weighted.sum, wt = e2)) %*% t(gam0) + weighted.sum(Bs2,wt=e1)*t(gam0)}
+
 
 v  = sweep(sweep(Bs, 2, mu, "*"), 2, alpha/phi, "+") + (Bs2*mu + alpha/phi)
 A0 = t(v)  %*% wty
@@ -765,7 +790,8 @@ zlog = matrix(0, nrow=nrow(data), ncol=length(gpar$pi))
 for (k in 1:G ) zlog[,k] =  ddghypFA(x=data, par=gpar[[k]], log=TRUE)
 w = t(apply(zlog, 1, function(z,wt,v) { 
 x=exp(v*(z + log(wt)) );
-
+sun=is.infinite(x)
+x[sun]=1
 if (sum(x)  == 0) x= rep(1,length(x))
 x =  x/sum(x)
 return( x ) 
@@ -792,7 +818,7 @@ return(gpar)
 igpar3M <- function(data=NULL, G=NULL, n=10,label=NULL,q=2,method="kmeans") {
     #set.seed(142857)
 if(method=="modelBased"){
-    l=Mclust(data,G=2)$classification}
+    l=Mclust(data,G=G)$classification}
 else if(method=="hierarchical"){
     l=(cutree(hclust(dist(data),"ward.D"), k=G))
 }
@@ -824,13 +850,14 @@ val = list()
 val$mu    = rnorm(p, apply(data,2,weighted.mean, w=wt), sqrt(1/nrow(data)) )
 val$alpha = rnorm(p, 0, sqrt(1/nrow(data)) )
 e=eigen(cov.wt(data, wt = wt, method="ML")$cov)
-val$Lambda=e$vectors[,1:q]
 dia=diag(e$values[1:q])
-if(q==1){val$lambda=e$vectors[,1]
+if(q==1){val$Lambda=as.matrix(e$vectors[,1],p,q)
 dia=e$vectors[,1:q]
 val$sigma =val$Lambda%*%t(val$Lambda)
 }
-else{	val$sigma =val$Lambda%*%dia%*%t(val$Lambda)######Cris###################################################################################
+else{
+    val$Lambda=e$vectors[,1:q]
+    val$sigma =val$Lambda%*%dia%*%t(val$Lambda)######Cris###################################################################################
 }
 val$err=diag(cov.wt(data, wt = wt, method="ML")$cov-val$sigma)*diag(p)########Cris########################################################################################################################
 #  val$sigma = diag( diag( cov.wt(data, wt = wt, method="ML")$cov) ) #+ diag(apply(data,2,var))*1 # + outer(val$alpha,val$alpha)  
@@ -848,11 +875,13 @@ if (!is.null(label)) w = combinewk(weights=w, label= label)
 
 G= length(gpar$pi);##number clusters
 d= length(gpar[[1]]$mu);##number variables
-Sk = array(0, c(d,d,G) )
+#Sk = array(0, c(d,d,G) )
 for (k in 1:G ) {
 
-gpar[[k]] = updatemaScplM(x=data, par=gpar[[k]], weights=w[,k], invS=NULL, alpha.known=NULL, v=v)
-Sk[,,k]   = gpar[[k]]$sigma
+gpar[[k]] = updatemaScplM1(x=data, par=gpar[[k]], weights=w[,k], invS=NULL, alpha.known=NULL, v=v)
+w = weightsFA(data=data, gpar=gpar,v=v)
+gpar[[k]] = updatemaScplM2(x=data, par=gpar[[k]], weights=w[,k], invS=NULL, alpha.known=NULL, v=v)
+#Sk[,,k]   = gpar[[k]]$sigma
 
 }
 gpar$pi = apply(w,2,mean)
@@ -875,7 +904,7 @@ return(gpar)
 
 
 
-updatemaScplM <- function(x, par, weights=NULL, invS=NULL, alpha.known=NULL, v=NULL) {
+updatemaScplM1 <- function(x, par, weights=NULL, invS=NULL, alpha.known=NULL, v=NULL) {
 ####computation of mu and alpha sigma cpl
 ##########piu importante intervenire qui!!
 if (is.null(weights)) weights=rep(1,nrow(x))
@@ -902,25 +931,6 @@ mu.new   = apply(x, 2, weighted.mean, w=abc[,2]*weights) - alpha.new/ABC[2]
 }	
 alpha.new = alpha.new*v
 
-A = cov.wt(x, wt=abc[,2]*weights, center=mu.new, method="ML")$cov*ABC[2] #returns a list containing weighted covariance matrix and the mean of the data
-#	R = A - outer(alpha.new,alpha.new)*ABC[1]
-#	r = sweep(x, 2, mu.new)
-r = apply(x, 2, weighted.sum, wt=weights)/sumw
-R = A - (outer( r - mu.new, alpha.new) + outer(alpha.new, r - mu.new)) + outer(alpha.new,alpha.new)*ABC[1] 
-
-d=ncol(x)
-q=ncol(par$Lambda)
-var=par$Lambda
-fi=par$err
-fi1=ginv(fi)
-dia=diag(q)
-if( length(q)==0){dia=q}
-inv=fi1-fi1%*%var%*%ginv(dia+t(var)%*%fi1%*%var)%*%t(var)%*%fi1
-va.new=R%*%t(inv)%*%var
-inv=fi1-fi1%*%va.new%*%ginv(dia+t(va.new)%*%fi1%*%va.new)%*%t(va.new)%*%fi1
-
-fi.new=(R%*%t(inv)%*%fi)*diag(d)
-var=va.new%*%t(va.new)+fi.new
 
 
 
@@ -928,15 +938,199 @@ par.old = c(  log(par$cpl[1]) , par$cpl[2])
 #a = optim( par.old, loglikgig4, ABC=ABC)
 par.ol = c(exp(par.old[1]), par.old[2])
 a = updateolU(ol=par.ol, ABC=ABC, n=2)
-
 #if ( loglikgig4(par.old, ABC) < loglikgig4(par.old, ABC) ) cpl.new = par$cpl
 #  else cpl.new =  c( rep(exp(a$par[1]), 2), a$par[2])
-
+#if(a[1]<=0){a[1]=eps}
 cpl.new =  c( a[1], a[2])
-new.par = list(mu=mu.new, alpha=alpha.new, sigma=var, cpl=cpl.new, Lambda=va.new, err=fi.new )
+
+
+new.par = list(mu=mu.new, alpha=alpha.new, sigma=par$sigma, cpl=cpl.new, Lambda=par$Lambda, err=par$err )
 
 return(new.par)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+updatemaScplM2 <- function(x, par, weights=NULL, invS=NULL, alpha.known=NULL, v=NULL) {
+    ####computation of mu and alpha sigma cpl
+    ##########piu importante intervenire qui!!
+    if (is.null(weights)) weights=rep(1,nrow(x))
+    if (is.null(invS)) invS=ginv(par$sigma)
+    
+    # expectations of w, 1/w, log(w) given x
+    abc = gig2FA(x=x, par=par, invS=invS)
+    d = length(par$mu)
+    
+    sumw = sum(weights)
+    ABC = apply(abc,2,weighted.sum, wt=weights)/sumw
+    mu.new   = par$mu
+    
+    alpha.new = par$alpha
+    
+
+    cpl.new =  par$cpl
+    
+    
+    
+    
+    #####second estep
+    d=ncol(x)
+    q=ncol(par$Lambda)
+    var=par$Lambda
+    fi=par$err
+    fi1=ginv(fi)
+    fi1=diag(d)*as.vector(fi1)
+    dia=diag(q)
+    if( length(q)==0){dia=q}
+    inv=fi1-fi1%*%var%*%ginv(dia+t(var)%*%fi1%*%var)%*%t(var)%*%fi1
+    beta=t(var)%*%inv
+    term1=sweep(x,2, FUN ="-", STATS=mu.new)-matrix(alpha.new,nrow(x),d,1)*matrix(abc[,1],nrow(x),d)
+    uhat=beta%*%t(term1)
+    term1=sweep(x,2, FUN ="-", STATS=mu.new)*matrix(abc[,2],nrow(x),d)-matrix(alpha.new,nrow(x),d,1)
+
+    uhatb=beta%*%t(sweep(x,2, FUN ="-", STATS=mu.new)*matrix(abc[,2],nrow(x),d)-matrix(alpha.new,nrow(x),d,1))
+
+    
+    A = cov.wt(x, wt=abs(abc[,2]*weights), center=mu.new, method="ML")$cov*ABC[2] #returns a list containing weighted covariance matrix and the mean of the data
+    r = apply(x, 2, weighted.sum, wt=weights)/sumw
+    R = A - (outer( r - mu.new, alpha.new) + outer(alpha.new, r - mu.new)) + outer(alpha.new,alpha.new)*ABC[1]
+    
+    
+    euu=sum(abc[,2]*weights)*diag(q)-sum(abc[,2]*weights)*beta%*%var+beta%*%R%*%t(beta)*sumw
+    
+    #euu=diag(q)-beta%*%var+beta%*%t(term1)%*%term1%*%t(beta)
+     va.new=(t(sweep(x,2, FUN ="-", STATS=mu.new)*(weights))%*%t(uhatb)-t(matrix(alpha.new,nrow(x),d,1)*(weights))%*%t(uhat))%*%ginv(euu)#/sum(abc[,2]*weights)
+   
+   # va.new=(t(sweep(x,2, FUN ="-", STATS=mu.new)*weights)%*%t(uhatb)-(alpha.new)%*%t(apply(weights*uhat,1,"sum")))%*%ginv(euu)
+
+    
+	#euu=diag(q)-beta%*%var+beta%*%t(term1*abc[,2]*weights)%*%term1%*%t(beta)
+    fip1=t(sweep(x,2, FUN ="-", STATS=mu.new)*weights)%*%t(uhatb)%*%t(var)
+    fip2=(alpha.new)%*%t(apply(weights*uhat,1,"sum"))%*%t(var)+(var%*%euu%*%t(var))
+
+    fi.new=diag(R+(2/sumw)*(-fip1+fip2))
+    # fi.new=diag(R+(t(-2*t(sweep(x,2, FUN ="-", STATS=mu.new)*weights))%*%t(uhatb)%*%t(var)+2*(alpha.new)%*%t(apply(weights*uhat,1,"sum"))%*%t(var)+(var%*%euu%*%t(var)))/sumw)
+     # euu=diag(q)-beta%*%var+beta%*%t(term1*abc[,2]*weights)%*%term1%*%t(beta)
+     #fi.new=diag(R-(t(2*abc[,2]*term1*weights)%*%t(uhat)%*%t(var)-sum(abc[,2]*weights)*(var%*%euu%*%t(var)))/sumw)
+    #fi.new=diag((t(abc[,2]*term1*weights)%*%(term1)-t(2*abc[,2]*term1*weights)%*%t(uhat)%*%t(var)+sum(abc[,2]*weights)*(var%*%euu%*%t(var)))/sumw)
+    # fi.new=1/fi.new
+	#fi.new=par$err
+	
+    #va.new=R%*%t(inv)%*%var
+    # inv=fi1-fi1%*%va.new%*%ginv(dia+t(va.new)%*%fi1%*%va.new)%*%t(va.new)%*%fi1
+    #fi.new=(R%*%t(inv))*diag(d)%*%fi
+    
+    var=va.new%*%t(va.new)+diag(d)*fi.new
+    
+    new.par = list(mu=mu.new, alpha=alpha.new, sigma=var, cpl=cpl.new, Lambda=va.new, err=fi.new )
+    
+    return(new.par)
+}
+
+
+
+
+
+
+
+updatemaScplMbu <- function(x, par, weights=NULL, invS=NULL, alpha.known=NULL,pi=NULL, v=NULL) {
+    ####computation of mu and alpha sigma cpl
+    ##########piu importante intervenire qui!!
+    if (is.null(weights)) weights=rep(1,nrow(x))
+    if (is.null(invS)) invS=ginv(par$sigma)
+    
+    # expectations of w, 1/w, log(w) given x
+    abc = gig2FA(x=x, par=par, invS=invS)
+    d = length(par$mu)
+    
+    sumw = sum(weights)
+    ABC = apply(abc,2,weighted.sum, wt=weights)/sumw
+    if ( is.null(alpha.known) ) {
+        A = ABC[1]
+        B = ABC[2]
+        u = (B - abc[,2])*weights
+        t = (A*abc[,2]-1)*weights
+        T = sum(t)
+        
+        mu.new    = apply(x, 2, weighted.sum, w=t)/T
+        alpha.new = apply(x, 2, weighted.sum, w=u)/T
+    } else {
+        alpha.new = alpha.known
+        mu.new   = apply(x, 2, weighted.mean, w=abc[,2]*weights) - alpha.new/ABC[2]
+    }
+    alpha.new = alpha.new*v
+    
+    
+    
+    
+    par.old = c(  log(par$cpl[1]) , par$cpl[2])
+    #a = optim( par.old, loglikgig4, ABC=ABC)
+    par.ol = c(exp(par.old[1]), par.old[2])
+    a = updateolU(ol=par.ol, ABC=ABC, n=2)
+    #if ( loglikgig4(par.old, ABC) < loglikgig4(par.old, ABC) ) cpl.new = par$cpl
+    #  else cpl.new =  c( rep(exp(a$par[1]), 2), a$par[2])
+    #if(a[1]<=0){a[1]=eps}
+    cpl.new =  c( a[1], a[2])
+    
+
+    
+    
+    
+    
+    #####second estep
+    d=ncol(x)
+    q=ncol(par$Lambda)
+    var=par$Lambda
+    fi=par$err
+    fi1=ginv(fi)
+    fi1=diag(d)*as.vector(fi1)
+    dia=diag(q)
+    if( length(q)==0){dia=q}
+    inv=fi1-fi1%*%var%*%ginv(dia+t(var)%*%fi1%*%var)%*%t(var)%*%fi1
+    beta=t(var)%*%inv
+    term1=sweep(x,2, FUN ="-", STATS=mu.new)-abc[,1]%*%t(alpha.new)
+    uhat=beta%*%t(term1)
+    euu=diag(q)-beta%*%var+beta%*%t(term1)%*%term1%*%t(beta)
+    
+    va.new=(t(term1*(abc[,2]*weights))%*%t(uhat)%*%ginv(euu))/sum(abc[,2]*weights)
+    
+    A = cov.wt(x, wt=abs(abc[,2]*weights), center=mu.new, method="ML")$cov*ABC[2] #returns a list containing weighted covariance matrix and the mean of the data
+    r = apply(x, 2, weighted.sum, wt=weights)/sumw
+    R = A - (outer( r - mu.new, alpha.new) + outer(alpha.new, r - mu.new)) + outer(alpha.new,alpha.new)*ABC[1]
+    
+	
+    fi.new=diag(R-(t(2*abc[,2]*term1*weights)%*%t(uhat)%*%t(var)-sum(abc[,2]*weights)*(var%*%euu%*%t(var)))/sumw)
+    #fi.new=diag((t(abc[,2]*term1*weights)%*%(term1)-t(2*abc[,2]*term1*weights)%*%t(uhat)%*%t(var)+sum(abc[,2]*weights)*(var%*%euu%*%t(var)))/sumw)
+    #fi.new=1/fi.new
+	
+	
+    #va.new=R%*%t(inv)%*%var
+    #inv=fi1-fi1%*%va.new%*%ginv(dia+t(va.new)%*%fi1%*%va.new)%*%t(va.new)%*%fi1
+    #fi.new=(R%*%t(inv))*diag(d)%*%fi
+    
+    var=va.new%*%t(va.new)+diag(d)*fi.new
+    
+    new.par = list(mu=mu.new, alpha=alpha.new, sigma=var, cpl=cpl.new, Lambda=va.new, err=fi.new )
+    
+    return(new.par)
+}
+
+
+
+
+
+
+
+
 
 
 MAPFA <- function(data, gpar, label=NULL) {
@@ -962,7 +1156,7 @@ a1 = omega + as.numeric( alpha %*% invS %*% alpha )
 b1 = omega + as.numeric(mahalanobis(x, center=par$mu, cov=invS, inverted=TRUE))
 v1 = par$cpl[2]-d/2
 
-val = gig(b=b1,a=a1, v=v1)
+val = gigFA(b=b1,a=a1, v=v1)
 return(val)
 }
 
@@ -972,18 +1166,22 @@ sab =  sqrt(abs(a*b))
 kv1 = besselK( sab, nu=v+1, expon.scaled =TRUE)
 kv  = besselK( sab, nu=v, expon.scaled =TRUE)
 kv12 = kv1/kv
-
+#sun=is.nan(kv12)
+#kv12[sun]=1
 
 sb.a = sqrt(abs(b/a))
 w    = kv12*sb.a
 invw = kv12*1/sb.a - 2*v/b
 
-
+#sqr1w=sqrt(sb.a)*besselK( sab, nu=v-0.5, expon.scaled =TRUE)/kv
 logw = log(sb.a) + grad( logbesselKv, x=rep(abs(v),length(sab)), y=sab, method="Richardson",  method.args=list(eps=1e-8, d=0.0001, zero.tol=sqrt(.Machine$double.eps/7e-7), r=6, v=2, show.details=FALSE))
 
-val =cbind(w,invw,logw)#,w2)	
+val =cbind(w,invw,logw)#,sqr1w,w2)
 return(val)
 }
+
+
+
 
 
 
@@ -1108,7 +1306,7 @@ return(gpar)
 igpar3 <- function(data=NULL, G=NULL, n=10,label=NULL, method="kmeans") {
     #set.seed(142857)
     if(method=="modelBased"){
-        l=Mclust(data,G=2)$classification
+        l=Mclust(data,G=G)$classification
         }
     else if(method=="hierarchical"){
         l=(cutree(hclust(dist(data),"ward.D"), k=G))
@@ -1141,7 +1339,9 @@ val$mu    = rnorm(p, apply(data,2,weighted.mean, w=wt), sqrt(1/nrow(data)) )
 val$alpha = rnorm(p, 0, sqrt(1/nrow(data)) )
 val$sigma = diag( diag( cov.wt(data, wt = wt, method="ML")$cov) ) #+ diag(apply(data,2,var))*1 # + outer(val$alpha,val$alpha)
 diag(val$sigma)=abs(diag(val$sigma))
-for(i in 1:ncol(val$sigma)){if(val$sigma[i,i]<0.1){val$sigma[i,i]=0.1}}
+if(p==1){val$sigma=var(data)}
+
+for(i in 1:p){if(val$sigma[i,i]<0.1){val$sigma[i,i]=0.1}}
 if (any(eigen(val$sigma)$values <= 0 ) ) val$sigma =  diag(apply(data,2,var))
 val$cpl   = c(1,-1/2)
 return(val)
@@ -1211,7 +1411,6 @@ par.old = c(  log(par$cpl[1]) , par$cpl[2])
 #a = optim( par.old, loglikgig4, ABC=ABC)
 par.ol = c(exp(par.old[1]), par.old[2])
 a = updateol(ol=par.ol, ABC=ABC, n=2)
-
 #if ( loglikgig4(par.old, ABC) < loglikgig4(par.old, ABC) ) cpl.new = par$cpl
 #  else cpl.new =  c( rep(exp(a$par[1]), 2), a$par[2])
 
@@ -1382,7 +1581,7 @@ rmgparMS <- function(g=NULL, p=NULL,data=NULL, method="kmeans") {
 	val = list()
 	#set.seed(142857)
     if(method=="modelBased"){
-        l=Mclust(data,G=2)$classification
+        l=Mclust(data,G=g)$classification
         l=BAR(data,l)}
     else if(method=="hierarchical"){
         l=(cutree(hclust(dist(data),"ward.D"), k=g))
@@ -1474,8 +1673,10 @@ dmsghypMS <- function(y, par, log=FALSE) {
     lv1 = -1/2*log( sigma ) -1/2*(log(2)+log(pi)) # d=1
     lv2 = - (log(besselK( sqrt(chi*psi), nu=lambda, expon.scaled =TRUE)) - sqrt(chi*psi) )
     lv3 = lambda/2*(log(psi)-log(chi) )
-    
-    val = apply(lx1 + lx2 + lx3, 1, sum) + sum(lv1 + lv2 + lv3)
+    if(ncol(y)==1){lx2=t(lx2)}
+    lx=lx1 +lx2 + lx3
+    #val = apply(lx1 + lx2 + lx3, 1, sum) + sum(lv1 + lv2 + lv3)
+     val = apply(lx, 1, sum) + sum(lv1 + lv2 + lv3)
     if (!log) val = exp( val )
     
     return(val)
@@ -1555,7 +1756,7 @@ updatemaScplpMS <- function(y=NULL, par=NULL, weights=NULL, alpha.known=NULL, v=
 
 
 updategam2MS <- function(gam0=NULL, y=NULL, sigma=NULL, alpha=NULL, mu=NULL, wt=NULL, invW=NULL) {
-    
+   
 	x = y %*% (gam0)
 	sumw = sum(wt)
 	Bs = sweep(invW, 2, 1/sigma, "*" )
@@ -1564,7 +1765,10 @@ updategam2MS <- function(gam0=NULL, y=NULL, sigma=NULL, alpha=NULL, mu=NULL, wt=
 	F0t = t( x * Bs ) %*% wty
     
 	e2  = apply(y^2, 1, sum)*wt
-	F1t = diag(apply(Bs, 2, weighted.sum, wt = e2)) %*% t(gam0)
+    
+    if(ncol(y)==1){F1t = (apply(Bs, 2, weighted.sum, wt = e2)) %*% t(gam0)}
+    else{
+        F1t = diag(apply(Bs, 2, weighted.sum, wt = e2)) %*% t(gam0)}
     
 	v  = sweep(sweep(Bs, 2, mu, "*"), 2, alpha/sigma, "+")
 	A0 = t(v)  %*% wty
@@ -1680,7 +1884,7 @@ rmgparMS <- function(g=NULL, p=NULL,data=NULL, method="kmeans") {
 	val = list()
 	#set.seed(142857)
     if(method=="modelBased"){
-        l=Mclust(data,G=2)$classification
+        l=Mclust(data,G=g)$classification
         l=BAR(data,l)}
     else if(method=="hierarchical"){
         l=(cutree(hclust(dist(data),"ward.D"), k=g))

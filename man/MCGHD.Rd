@@ -7,9 +7,7 @@
 \description{Carries out model-based clustering using the mixture of coalesced generalized hyperbolic distributions.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
-\usage{
-MCGHD(data=NULL, gpar0=NULL, G=2, max.iter=100, 
-epsilon=1e-2, label=NULL, method="kmeans",scale=TRUE )
+\usage{MCGHD(data=NULL,gpar0=NULL,G=2,max.iter=100,eps=1e-2,label=NULL,method="km",scale=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -25,7 +23,7 @@ epsilon=1e-2, label=NULL, method="kmeans",scale=TRUE )
   \item{max.iter}{(optional)  A numerical parameter giving  the maximum number of iterations each EM algorithm is allowed to use.
 %%     ~~Describe \code{model} here~~
 }
-  \item{epsilon}{ (optional) A number specifying the epsilon value for the convergence criteria used in the EM algorithms. For each algorithm, the criterion is based on the difference between the log-likelihood at an iteration and an asymptotic estimate of the log-likelihood at that iteration. This asymptotic estimate is based on the Aitken acceleration and details are given in the References.
+  \item{eps}{ (optional) A number specifying the epsilon value for the convergence criteria used in the EM algorithms. For each algorithm, the criterion is based on the difference between the log-likelihood at an iteration and an asymptotic estimate of the log-likelihood at that iteration. This asymptotic estimate is based on the Aitken acceleration.
 %%     ~~Describe \code{init} here~~
 }
   \item{label}{ ( optional)  A n dimensional vector, if label[i]=k then observation belongs to group k, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
@@ -35,7 +33,7 @@ epsilon=1e-2, label=NULL, method="kmeans",scale=TRUE )
  \item{scale}{ ( optional) A  logical value indicating whether or not the data should be scaled, true by default.%%     ~~Describe \code{true.class} here~~
 }
 }
-\details{ The arguments gpar0, if specified, is a list structure containing at least one p dimensional vector  mu, alpha and phi, a pxp matrix gamma, a px2 vector cpl containing the vectors omega and lambda, and a 2-dimensional vector containing the omega0 and lambda0.
+\details{ The arguments gpar0, if specified,  has to be a list structure containing as much element as the number of components G. Each element must include the following parameters:  one p dimensional vector  mu, alpha and phi, a pxp matrix gamma, a px2 vector cpl containing the vectors omega and lambda, and a 2-dimensional vector containing the omega0 and lambda0.
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{A list with components
