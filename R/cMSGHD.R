@@ -13,7 +13,7 @@ cMSGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL ,eps=1e
     if ( G < 1) stop('G is not a positive integer')
     if (  max.iter< 1) stop('max.iter is not a positive integer')
     n=max.iter
-    if (is.null(gpar0)) gpar = rgparMSr(g=G,p=ncol(data),data,method=method)
+    if (is.null(gpar0)) gpar = rmgparMSr(g=G,data,method=method)
     else gpar  = gpar0
     
     loglik = numeric(n)
@@ -26,8 +26,11 @@ cMSGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL ,eps=1e
         gpar = EMgrstepMSr(data=data, gpar=gpar, v=1, label = label)
         loglik[i] = llikMS(data, gpar)
     }
-
+    if(i<n){loglik[i+1:max.iter]=loglik[i]}
     BIC=2*loglik[n]-log(nrow(data))*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
-    val = list(loglik= loglik, gpar=gpar, z=weightsMS(data=data, gpar= gpar), map=MAPMS(data=data, gpar= gpar, label=label), BIC=BIC)
+    z=weightsMS(data=data, gpar= gpar)
+    map=MAPMS(data=data, gpar= gpar, label=label)
+    ICL=BIC+sum(log(apply(z,1,max)))
+    val = list(loglik= loglik, gpar=gpar, z=z, map=map, BIC=BIC,ICL=ICL)
     return(val)
 }

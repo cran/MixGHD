@@ -26,7 +26,7 @@ the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the
   \item{method}{ ( optional)  A string indicating the method to be used, if not specified GHD is used. Alternative methods are: MGHFA, MSGHD, cMSGHD, MCGHD. %%     ~~Describe \code{true.class} here~~
 }
   
-  \item{starting}{ ( optional)  A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" %%     ~~Describe \code{true.class} here~~
+  \item{starting}{ ( optional)  A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical",random "random", and model based "modelBased" %%     ~~Describe \code{true.class} here~~
 }
 \item{max.iter}{(optional)  A numerical parameter giving  the maximum number of iterations each EM algorithm is allowed to use.
 %%     ~~Describe \code{model} here~~
@@ -41,7 +41,7 @@ the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the
 }
  \item{scale}{ ( optional) A  logical value indicating whether or not the data should be scaled, true by default.%%     ~~Describe \code{true.class} here~~
 }
- \item{criterion}{ ( optional) A string indicating the selection criterion, if not specified the adjusted rand index (ARI)  is used. The alternative criterion is the BIC.%%     ~~Describe \code{true.class} here~~
+ \item{criterion}{ ( optional) A string indicating the selection criterion, if not specified the adjusted rand index (ARI)  is used. The alternative criteria are the BIC and the ICL.%%     ~~Describe \code{true.class} here~~
 }
 }
 \details{ Select the best model according to the adjusted rand index or the BIC

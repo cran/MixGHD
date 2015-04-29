@@ -28,7 +28,7 @@
 }
   \item{label}{ ( optional)  A n dimensional vector, if label[i]=k then observation belongs to group k, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
 }
-  \item{method}{ ( optional)   A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" %%     ~~Describe \code{true.class} here~~
+  \item{method}{ ( optional)   A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical", random "random", and model based "modelBased" %%     ~~Describe \code{true.class} here~~
 }
  \item{scale}{ ( optional) A  logical value indicating whether or not the data should be scaled, true by default.%%     ~~Describe \code{true.class} here~~
 }
@@ -38,6 +38,7 @@
 }
 \value{A list with components
 	\item{BIC}{Bayesian information criterion value.}
+	\item{ICL}{ICL index.}
 	\item{gpar}{A list of the model parameters in the rotated space. }
 	\item{loglik}{The log-likelihood values.}
 	\item{map}{A vector of integers indicating the maximum a posteriori classifications for the best model.}
@@ -49,7 +50,7 @@
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\references{C. Tortora, B.C. Franczak, R.P. Browne, and  P.D. McNicholas (2014). A Mixture of Coalesced Generalized Hyperbolic Distributions. Arxiv preprint arXiv:1403.2332
+\references{C. Tortora, B.C. Franczak, R.P. Browne, and  P.D. McNicholas (2014). A Mixture of Coalesced Generalized Hyperbolic Distributions. Arxiv preprint arXiv:1403.2332v5
 %% ~put references to the literature/web site here ~
 }
 \author{Cristina Tortora, Ryan P. Browne, Brian C. Franczak and Paul D. McNicholas.
@@ -60,14 +61,13 @@ Maintainer: Cristina Tortora <ctortora@uoguelph.ca>%%  ~~who you are~~
 }
 \examples{
 ##loading bankruptcy data
-data(bankruptcy)
+data(banknote)
 
 ##model estimation
-model=MCGHD(bankruptcy[,2:3],G=2)
+model=MCGHD(banknote[,2:7],G=2,max.iter=20)
 
 #result
-plot(bankruptcy[,2:3],col=model$map)
-table(bankruptcy[,1],model$map)}
+table(banknote[,1],model$map)}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ Clustering }

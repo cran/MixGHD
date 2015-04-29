@@ -1,7 +1,5 @@
 .packageName<-'MixGHD'
 
-
-
 #################################################################################################################################
 #################################################################################################################################
 #################################################################################################################################
@@ -24,14 +22,16 @@
 
 
 EMgrstep <- function(data=NULL, gpar=NULL, v=1, label=NULL, w=NULL, vg=NULL) {
-	if (is.null(w)) w = weights(data=data, gpar=gpar,v=v)
-	if (!is.null(label)) w = combinewk(weights=w, label= label)
-	
+		
 	G= length(gpar$pi);
 	for (k in 1:G ) {
+		if (is.null(w)) w = weights(data=data, gpar=gpar,v=v)
+		if (!is.null(label)) w = combinewk(weights=w, label= label)
 		vg = iweights(data=data, gpar=gpar[[k]],v=v)
 		ng = apply(w,2,sum)
-		gpar[[k]] = updatemaScplp(y=data, par=gpar[[k]], weights=w[,k], alpha.known=NULL, v=v)
+        
+        #  wg=matrix((apply((w[,k]*vg),2,sum)/sum(w[,k]*vg)),nrow(data),2,1)
+		gpar[[k]] = updatemaScplp(y=data, par=gpar[[k]], weights=w[,k],iweights=vg, alpha.known=NULL, v=v)#iweights=vg,
 		gpar[[k]]$wg = apply((w[,k]*vg),2,sum)/ng[k]
 		
 	}
@@ -263,8 +263,8 @@ weights <- function(data=NULL, gpar=NULL, v=1) {
 ##############uig  mixtures weights
 
 iweights <- function(data=NULL, gpar=NULL, v=1) {
-	G = 2	
-	if (G > 1) {
+	#G = 2
+	#if (G > 1) {
 		zlog = matrix(0, nrow=nrow(data), ncol=2)
 		zlog[,1] =  ddghyp(y=data, par=gpar, log=TRUE, invS=NULL)
 		zlog[,2] =  dmsghyp(y=data, par=gpar, log=TRUE)
@@ -275,7 +275,7 @@ iweights <- function(data=NULL, gpar=NULL, v=1) {
 					x =  x/sum(x)
 					return( x ) 
 					}, wt=gpar$wg,v=v ))
-	} else w = matrix(1,nrow=nrow(data), ncol=G)
+        #} else w = matrix(1,nrow=nrow(data), ncol=G)
 	return(w)
 }
 
@@ -373,55 +373,75 @@ weighted.sum <- function(z,wt,...) return( sum(z*wt,...) )
 ########################### M step Parameter estimation ##################################
 
 ################Initialization
+rmgpar <- function(g=NULL, p=NULL,data=NULL, method="kmeans",n=10) {
+	val = list()
+	#set.seed(142857)
+    if(method=="modelBased"){
+        l=gpcm(data,  G=g, mnames=c("VVV"))$map
+        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
+        gpar  = rgparC(data=data, g=g, w=z)
+        
+        for (j in 1:n)  gpar = EMgrstep(data=data, gpar=gpar, v=1, label= l,  w=z)
+        return(gpar)
+        # l=BAR(data,l)
+    }
+    else if(method=="hierarchical"){
+        l=(cutree(hclust(dist(data),"ward.D"), k=g))
+        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
+        gpar  = rgparC(data=data, g=g, w=z)
+        
+        for (j in 1:n)  gpar = EMgrstep(data=data, gpar=gpar, v=1, label= l,  w=z)
+        return(gpar)
+        #l=BAR(data,l)
+    }
+    else if(method=="random"){
+        #l=kmeans(data,g)
+        l=round(runif(nrow(data))*(g-1)+1)
+        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
+        gpar  = rgparC(data=data, g=g, w=z)
+        #l=BAR(data,l)
+    }
+    else{ l=kmeans(data,g)
+        l=l$cluster#$centers}
+    z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
+    gpar  = rgparC(data=data, g=g, w=z)
+    
+        for (j in 1:n)  gpar = EMgrstep(data=data, gpar=gpar, v=1, label= l,  w=z)}
+    return(gpar)
+    
+}
 
+rgparC<- function(data,g=NULL, w=NULL) {
+    if (is.null(w) ) w = matrix(1/g, nrow=nrow(data), ncol=g)
+	val = list()
+    # l=rmgparMS(g, p,data,method=method)
+	for (k in 1:g) val[[k]] = rmparC(data=data,wt=w[,k],k)
+	val$pi = rep(1/g,g)
+	return(val)
+}
 
-
-rmpar <- function(p=NULL,l,k) {
-	par = list()
-	par$mu=l[k,]#$centers[k,]
-#par$mu = rnorm(p,0,.01); 
-	par$phi  = rep(1,p); 
-	par$alpha = rnorm(p,0,.01);
-	par$cpl = cbind( rep(1,p), rep(-1/2,p))
-#	par$gam   = diag( rep(1,p) )
-	par$gam   = eigen( cov(matrix(rnorm((p+1)*p), p+1, p)))$vectors
-# par$sigma = par$gam%*%diag(par$phi)%*%t(par$gam)
-	par$sigma = diag(par$phi)
-# print(par$sigma)
+rmparC <- function(data,wt,k) {
+    par = list()
+    p=ncol(data)
+	par$mu =rnorm(p, apply(data,2,weighted.mean, w=wt), sqrt(1/nrow(data)) )#l[k,] #rnorm(p,0,.01);
+	#par$phi  =  rnorm(p, 0, sqrt(1/nrow(data)) )#rep(1,p);
+	par$alpha =  rnorm(p, 0, sqrt(1/nrow(data)) )#rnorm(p,0,.01);
+    
+    sigma = diag( diag( cov.wt(data, wt = wt, method="ML")$cov) ) #+ diag(apply(data,2,var))*1 # + outer(val$alpha,val$alpha)
+    diag(sigma)=abs(diag(sigma))
+    if(p==1){sigma=var(data)}
+    
+    for(i in 1:p){if(sigma[i,i]<0.1){sigma[i,i]=0.1}}
+    if (any(eigen(sigma)$values <= 0 ) ) val$sigma =  diag(apply(data,2,var))
+    par$gam   = eigen( sigma)$vectors
+    par$phi  = eigen( sigma)$values
+    par$sigma=sigma
 	par$cpl0 = c(1,-1/2)
+    par$cpl = cbind( rep(1,p), rep(-1/2,p))
 	wg <- runif(1)
 	par$wg = c(wg,1-wg)
 	return(par)
 }
-
-BAR=function(data,l){
-    k=max(l)
-    bar=matrix(0,k,ncol(data))
-    for(i in 1:k){
-        dd=data[l==i,]
-        bar[i,]=mean(dd)
-    }
-    return(bar)
-}
-
-rmgpar <- function(g=NULL, p=NULL,data=NULL, method="kmeans") {
-	val = list()
-	#set.seed(142857)
-    if(method=="modelBased"){
-    l=Mclust(data,G=g)$classification
-        l=BAR(data,l)}
-    else if(method=="hierarchical"){
-       l=(cutree(hclust(dist(data),"ward.D"), k=g))
-        l=BAR(data,l)
-    }
-    else{ l=kmeans(data,g)
-    l=l$centers}
-	for (k in 1:g) val[[k]] = rmpar(p=p,l,k)
-	val$pi = rep(1/g,g)
-	return(val)
-}	
-
-
 ########################## MAIN
 
 updatemaScplp <- function(y=NULL, par=NULL, weights=NULL, iweights=NULL, alpha.known=NULL, v=1) {
@@ -436,96 +456,112 @@ updatemaScplp <- function(y=NULL, par=NULL, weights=NULL, iweights=NULL, alpha.k
 	invW <- matrix(0,n,p)
 	logW <- matrix(0,n,p)
 	abcM <- list(W=W,invW=invW,logW=logW)
-	A <- 0
-	if(sum(iweights[,2] != 0)){ 
-		abcM = gig2p(sr2=sr2, par=par)
-		A = apply(abcM$W,   2,weighted.sum, wt=weights*iweights[,2])      
-		B = apply(abcM$invW,2,weighted.sum, wt=weights*iweights[,2])/sum(weights*iweights[,2]) 
-		C = apply(abcM$logW,2,weighted.sum, wt=weights*iweights[,2])/sum(weights*iweights[,2])
-	}
+    #	A <- 0
+    	if(sum(iweights[,2]) != 0){
+    		abcM = gig2p(sr2=sr2, par=par)
+    #		A = apply(abcM$W,   2,weighted.sum, wt=weights*iweights[,2])
+    #		B = apply(abcM$invW,2,weighted.sum, wt=weights*iweights[,2])/sum(weights*iweights[,2])
+    #		C = apply(abcM$logW,2,weighted.sum, wt=weights*iweights[,2])/sum(weights*iweights[,2])
+    	}
 	
 	abc = gig2(x=x, par=par)
 	
 	if (runif(1) > 1/2) new.gam = updategam2(gam0=par$gam, y=y, phi=par$phi,alpha=par$alpha, mu=par$mu, wt=weights,ut=iweights, invW= abcM$invW,cpl0=abc)
-	else 	new.gam = updategam1(gam0=par$gam, y=y,  phi=par$phi,alpha=par$alpha, mu=par$mu, wt=weights,ut=iweights, invW=abcM$invW,cpl0=abc)
+	else new.gam = updategam1(gam0=par$gam, y=y,  phi=par$phi,alpha=par$alpha, mu=par$mu, wt=weights,ut=iweights, invW=abcM$invW,cpl0=abc)
 	x = y %*% (new.gam)
 	
 	sumw = sum(weights)
   	
-	AU = sum((abc[,1]*weights*iweights[,1]))    
-	BU = sum((abc[,2]*weights*iweights[,1]))
-	CU = sum((abc[,3]*weights*iweights[,1]))
-	Z.x <- apply(x,2,weighted.sum,wt=weights*iweights[,1])
+    #	AU = sum((abc[,1]*weights*iweights[,1]))
+    #	BU = sum((abc[,2]*weights*iweights[,1]))
+    #	CU = sum((abc[,3]*weights*iweights[,1]))
+	#Z.x <- apply(x,2,weighted.sum,wt=weights*iweights[,1])
 	
 #############MU
-	alpha.new = par$alpha   	  
-	mu.num <- (apply(x, 2, weighted.sum, w=abcM$invW*weights*iweights[,1]) - alpha.new*sum(weights*iweights[,1])) + (apply(x*abc[,2], 2, weighted.sum, wt=weights*iweights[,2]) - alpha.new*sum(weights*iweights[,2]))
-	mu.den <- sum(abcM$invW*weights*iweights[,1]) + sum(abc[,2]*weights*iweights[,2])
-	mu.new = mu.num/mu.den
+S1=abcM$W*iweights[,2]+abc[,1]*iweights[,1]
+S2=abcM$invW*iweights[,2]+abc[,2]*iweights[,1]
+S=S1*S2
+	sS1=apply(S1,2,weighted.sum, wt=weights)#(apply((abcM$W*weights*iweights[,2]),2,sum)+sum(abc[,1]*weights*iweights[,1]))
+	sS2=apply(S2,2,sum)#(apply((abcM$invW*weights*iweights[,2]),2,sum)+sum(abc[,2]*weights*iweights[,1]))#/sumw
+sumS=apply(S,2,weighted.sum, wt=weights^2)#/sumw
+#molt=(sS1*S2-sumw)
+#moltb=(sS1*sS2-sumw^2)
+molt=(S1*S2-1)#S1*S2
+moltb=(sumS-sumw^2)
+nummu=apply(weights^2*x*molt,2,sum)
+#denmu=apply(weights*moltb,2,sum)
+mu.new=nummu/moltb
+mu.new=as.vector(mu.new)
 	
+#	S2=apply((abcM$invW*weights*iweights[,2]),2,sum)+rep(sum(abc[,2]*weights*iweights[,1]),1,p)
+#mu.num <- t(apply(x, 2, weighted.sum, w=abcM$invW*weights*iweights[,2]) +apply(x, 2, weighted.sum, w=abc[,2]*weights*iweights[,1])-#sum(weights)*ginv(S1)*apply(x, 2, weighted.sum, w=weights))
+#	mu.den <- sum(abcM$invW*weights*iweights[,2]) + sum(abc[,2]*weights*iweights[,1])-sumw^2*ginv(S1)
+#	mu.new = t(mu.num)/mu.den
+#	mu.new=as.vector(mu.new)
 # #######ALPHA			
-# alpha.new = par$alpha
+#sumS2=apply(S2,2,weighted.sum, wt=weights)
+
+#   molt2=sumS2/sumw-S2
+#   numal=apply(weights*x*molt2,2,sum)
+#alpha.new=numal/denmu
+
 	
-# #############MU
-	S1=apply((abcM$W*weights*iweights[,2]),2,sum)+rep(sum(abc[,1]*weights*iweights[,1]),1,p)
-# S2=apply((abcM$invW*weights*iweights[,2]),2,sum)+rep(sum(abc[,2]*weights*iweights[,1]),1,p)
-	
-# Num1=apply((  (abcM$invW*weights*iweights[,2]+matrix((abc[,2]*weights*iweights[,1]),nrow(x),p))*x),2,sum)
-# Num2= sumw*apply((x/S1), 2,weighted.sum, wt=weights)
-# Den=S2-sumw^2/(S1)
-# mu.new=(Num1-Num2)/(Den)
-# # mu.new=par$mu
-#######ALPHA    	
-#  Num1al=sumw/S2*Num1
-#  Num2al=apply(x, 2,weighted.sum, wt=weights)
-# Denal=S2-sumw^2/(S1)
-# alpha.new=	(Num1al-Num2al)/(Denal)
-	Numal=apply((sweep(x, 2, mu.new,"-")), 2,weighted.sum, wt=weights)
-	alpha.new=Numal/S1
-    
+Numal=apply((sweep(x, 2, mu.new,"-")), 2,weighted.sum, wt=weights)
+	alpha.new=Numal/sS1
+   
+ 
 #########PHI		
 	
-	Num11 = 0
-	if((sum(iweights[,1]) != 0) & sum(abc[,2]*weights*iweights[,1])!=0) Num11 = cov.wt(x=x, wt=(abc[,2]*weights*iweights[,1]), center=mu.new, method="ML")$cov*BU
-	r = as.numeric(Z.x - mu.new)
-	m = as.numeric(alpha.new)
-	Num12 = outer(alpha.new,r)
-	Num13 = outer(r, alpha.new)
-	Num14 = outer(alpha.new, alpha.new)*AU
+    #	Num11 = 0
+    #	if((sum(iweights[,1]) != 0) & sum(abc[,2]*weights*iweights[,1])!=0) Num11 = cov.wt(x=x, wt=(abc[,2]*weights*iweights[,1]), center=mu.new, method="ML")$cov*BU
+    #	r = as.numeric(Z.x - mu.new)
+	#m = as.numeric(alpha.new)
+    #	Num12 = outer(alpha.new,r)
+    #	Num13 = outer(r, alpha.new)
+	#Num14 = outer(alpha.new, alpha.new)*AU
 	
-	Ax = apply(sweep(x, 2, mu.new,"-")^2*abcM$invW, 2, weighted.sum, wt=weights*iweights[,2])
-	ax = apply(x, 2, weighted.sum, wt=weights*iweights[,2])
-	phi.new1 = (Num11 - (Num12 + Num13) + Num14 + Ax - 2*(ax - mu.new)*alpha.new + alpha.new^2*A)/(sum(weights*iweights[,1]) + sum(weights*iweights[,2]))
+	#Ax = apply(sweep(x, 2, mu.new,"-")^2*abcM$invW, 2, weighted.sum, wt=weights*iweights[,2])
+	#ax = apply(x, 2, weighted.sum, wt=weights*iweights[,2])
+	#phi.new1 = (Num11 - (Num12 + Num13) + Num14 + Ax - (2*(ax - mu.new)*alpha.new + alpha.new^2*A))/(sum(weights*iweights[,1]) + sum(weights*iweights[,2]))
 	
 # phi.new = diag(phi.new1)
 	
 #phi.new=par$phi
 	
 	
-	InvM=matrix(abc[,2],nrow(x),p)
+    #	InvM=matrix(abc[,2],nrow(x),p)
 # update for sigma
-	Matu = x-matrix(mu.new,n,p,1)-matrix(abc[,1],n,p)*matrix(alpha.new,n,p,1)
-	MatM = x-matrix(mu.new,n,p,1)-abcM$W*matrix(alpha.new,n,p,1)
+#	Matu = x-matrix(mu.new,n,p,1)-matrix(abc[,1],n,p)*matrix(alpha.new,n,p,1)
+    #	MatM = x-matrix(mu.new,n,p,1)-abcM$W*matrix(alpha.new,n,p,1)
 	
-	Num1sig=t(weights*iweights[,1]*abc[,1]*Matu)%*%(Matu)
+	#Num1sig=t(weights*iweights[,1]*abc[,2]*Matu)%*%(Matu)
 	
-	Num2sig=t(weights*iweights[,1]*abcM$invW*MatM)%*%(MatM)
+	#Num2sig=t(weights*iweights[,2]*abcM$invW*MatM)%*%(MatM)
+  
+    r=x-matrix(mu.new,n,p,1)
+    Num1sig=t(matrix(weights*iweights[,1]*abc[,2],n,p)*r)%*%r+(sum(weights*iweights[,1]*abc[,1])*alpha.new)%*%t(alpha.new)-(apply(matrix(weights*iweights[,1],n,p)*r,2,sum))%*%t(alpha.new)-(alpha.new)%*%t(apply(matrix(weights*iweights[,1],n,p)*r,2,sum))
+    
+    
+    Num2sig=t(matrix(weights*iweights[,2],n,p)*abcM$invW*r)%*%r+(apply(weights*iweights[,2]*abcM$W,2,sum)*alpha.new)%*%t(alpha.new)-(apply(matrix(weights*iweights[,2],n,p)*r,2,sum))%*%t(alpha.new)-(alpha.new)%*%t(apply(matrix(weights*iweights[,2],n,p)*r,2,sum))
 	
+    phi.new=diag(Num1sig+Num2sig)/sumw
+
 #Ax = apply(sweep(x, 2, mu.new, "-")^2*abcM$invW, 2, weighted.sum, wt=weights*uwe)/sumw
 #	ax = apply(x, 2, weighted.sum, wt=weights*uwe)/sumw
 #	AxU = apply(sweep(x, 2, mu.new, "-")^2*InvM, 2, weighted.sum, wt=weights*uweU)/sumw
 #	axU = apply(x, 2, weighted.sum, wt=weights*uweU)/sumw
 #	sigma.new = Ax - 2*(ax - mu.new)*alpha.new + alpha.new^2*A+AxU - 2*(axU - mu.new)*alpha.new + alpha.new^2*AU
 #sigma.new=par$sigma
-	phi.new=diag(Num1sig+Num2sig)/sumw
+
 ################CPLMs
+if(sum(iweights[,2]) != 0){
+    abcM = gig2p(sr2=sr2, par=par)
+    A = apply(abcM$W,   2,weighted.sum, wt=weights)/sum(weights)
+    B = apply(abcM$invW,2,weighted.sum, wt=weights)/sum(weights)
+    C = apply(abcM$logW,2,weighted.sum, wt=weights)/sum(weights)
 	
-	
-	
-	if(sum(iweights[,2]) != 0){
-		A = A/sum(weights*iweights[,2])
 		
-		omega=  exp( log(par$cpl[,1]) )
+		omega=  (par$cpl[,1])
 		test  = cbind(omega, lambda=par$cpl[,2], A, B, C)
 # print(test) 
 		cpl.new = t(apply(test, 1, function(z) {
@@ -544,9 +580,13 @@ updatemaScplp <- function(y=NULL, par=NULL, weights=NULL, iweights=NULL, alpha.k
 	a = updateolU(ol=par.ol, ABC=ABC, n=2)
 	cpl.newU =  c( a[1],  a[2])
 	
-#cpl.newU=par$cpl0
-	
-	par$sigma=par$gam%*%(diag(p)*phi.new)%*%t(par$gam)
+    # cpl.newU=par$cpl0
+    # 	cpl.new=par$cpl
+    # phi.new=par$phi
+    # alpha.new=par$alpha
+    #    mu.new=par$mu
+      #   new.gam=par$gam
+    	par$sigma=new.gam%*%(diag(p)*phi.new)%*%t(new.gam)
 	
 	new.par = list(mu=mu.new, phi=phi.new, alpha=alpha.new, cpl=cpl.new, gam=new.gam, sigma=par$sigma, cpl0=cpl.newU )
 	return(new.par)
@@ -654,8 +694,8 @@ wty = sweep(y, 1, wt*ut[,2], "*")
 wty2 = sweep(y,1,wt*ut[,1],"*")
 
 F0t = t( x * Bs ) %*% wty + t(x*Bs2) %*% wty2
-e2 = apply(Bs,1,max)*wt*ut[2]
-e1 = max(Bs)*wt*ut[1]
+e2 = apply(Bs,1,max)*wt*ut[,2]
+e1 = max(Bs)*wt*ut[,1]
 if(sum(e2)==0){    F1t =  ((cov.wt(y, center=rep(0,ncol(y)), wt=e1, method="ML" )$cov*sum(e1)) %*% (gam0))
 
 } else {
@@ -707,10 +747,16 @@ else{
     F1t = diag(apply(Bs, 2, weighted.sum, wt = e2)) %*% t(gam0) + weighted.sum(Bs2,wt=e1)*t(gam0)}
 
 
-v  = sweep(sweep(Bs, 2, mu, "*"), 2, alpha/phi, "+") + (Bs2*mu + alpha/phi)
-A0 = t(v)  %*% wty
+#v  = sweep(sweep(Bs, 2, mu, "*"), 2, alpha/phi, "+") + (Bs2*mu + alpha/phi)
+#A0 = t(v)  %*% wty
 
-F2 = F0t - F1t - A0
+v  = sweep(sweep(Bs, 2, mu, "*"), 2, alpha/phi, "+")
+v1 = (Bs2*mu + alpha/phi)
+A0 = t(v)  %*% wty
+A1 = t(v1) %*% wty2
+
+
+F2 = F0t - F1t - A0 -A1
 z  = svd( F2/sumw)
 gam = ( (z$v) %*% t(z$u) )
 gam = sweep(gam, 2, sign(diag(gam)), FUN="*" )
@@ -818,7 +864,7 @@ return(gpar)
 igpar3M <- function(data=NULL, G=NULL, n=10,label=NULL,q=2,method="kmeans") {
     #set.seed(142857)
 if(method=="modelBased"){
-    l=Mclust(data,G=G)$classification}
+     l=gpcm(data,  G=G, mnames=c("VVV"))$map}
 else if(method=="hierarchical"){
     l=(cutree(hclust(dist(data),"ward.D"), k=G))
 }
@@ -1306,18 +1352,35 @@ return(gpar)
 igpar3 <- function(data=NULL, G=NULL, n=10,label=NULL, method="kmeans") {
     #set.seed(142857)
     if(method=="modelBased"){
-        l=Mclust(data,G=G)$classification
+         l=gpcm(data,  G=G, mnames=c("VVV"))$map
+        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=lw)
+        gpar  = rgparGH(data=data, g=G, w=z)
+        
+        for (j in 1:n) try({ gpar = EMgrstepGH(data=data, gpar=gpar, v=1, label= label,  w=z)}, TRUE)
         }
     else if(method=="hierarchical"){
         l=(cutree(hclust(dist(data),"ward.D"), k=G))
+        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=lw)
+        gpar  = rgparGH(data=data, g=G, w=z)
+        
+        for (j in 1:n) try({ gpar = EMgrstepGH(data=data, gpar=gpar, v=1, label= label,  w=z)}, TRUE)
     }
-    else{ l=kmeans(data,G)$cluster}
+    else if(method=="random"){
+        #l=kmeans(data,g)
+        l=round(runif(nrow(data))*(G-1)+1)
+        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=lw)
+        gpar  = rgparGH(data=data, g=G, w=z)
+
+        #l=BAR(data,l)
+    }
+
+    else{ l=kmeans(data,G)$cluster
     
     lw = l#kmeans(data, centers=G, iter.max=10)$cluster
 z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=lw)
 gpar  = rgparGH(data=data, g=G, w=z)
 
-for (j in 1:n) try({ gpar = EMgrstepGH(data=data, gpar=gpar, v=1, label= label,  w=z)}, TRUE)
+        for (j in 1:n) try({ gpar = EMgrstepGH(data=data, gpar=gpar, v=1, label= label,  w=z)}, TRUE)}
 return(gpar)
 }
 
@@ -1350,7 +1413,7 @@ return(val)
 
 EMgrstepGH <- function(data=NULL, gpar=NULL, v=1, label=NULL, w=NULL) {
 ##parameter estimtion
-if (is.null(w)) w = weightsGH(data=data, gpar=gpar,v=v)
+if (is.null(w)) w = try(weightsGH(data=data, gpar=gpar,v=v))
 if (!is.null(label)) w = combinewk(weights=w, label= label)
 
 G= length(gpar$pi);##number clusters
@@ -1471,7 +1534,7 @@ weightsGH <- function(data=NULL, gpar=NULL, v=1) {
 G = length(gpar$pi)	
 if (G > 1) {
 zlog = matrix(0, nrow=nrow(data), ncol=length(gpar$pi))
-for (k in 1:G ) zlog[,k] =  ddghypGH(x=data, par=gpar[[k]], log=TRUE)
+	for (k in 1:G )zlog[,k] =  ddghypGH(x=data, par=gpar[[k]], log=TRUE)
 w = t(apply(zlog, 1, function(z,wt,v) { 
 fstar=v*(z + log(wt))-max(v*(z + log(wt)))
 x=exp(fstar);
@@ -1518,6 +1581,8 @@ lvx[,3] = xmu %*% invS %*% alpha
 
 
 lv = numeric(6)
+	if(is.nan(log(det( sigma )))){sigma =diag(ncol(mu))}
+
 lv[1] = -1/2*log(det( sigma )) -d/2*(log(2)+log(pi))
 lv[2] =  omega - log(besselK( omega, nu=lambda, expon.scaled =TRUE)) 
 lv[3] = -lambda/2*( log(1) )  
@@ -1577,40 +1642,72 @@ return( z)
 #################################################################################################################################
 
 
-rmgparMS <- function(g=NULL, p=NULL,data=NULL, method="kmeans") {
+rmgparMS <- function(g=NULL, p=NULL,data=NULL, method="kmeans",n=10) {
 	val = list()
 	#set.seed(142857)
     if(method=="modelBased"){
-        l=Mclust(data,G=g)$classification
-        l=BAR(data,l)}
+         l=gpcm(data,  G=g, mnames=c("VVV"))$map
+        # l=BAR(data,l)
+        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
+        gpar  = rgparMS(data=data, g=g, w=z,l=l)
+        
+        for (j in 1:n)  gpar = EMgrstepMS(data=data, gpar=gpar, v=1, label= l,  w=z)
+    }
     else if(method=="hierarchical"){
         l=(cutree(hclust(dist(data),"ward.D"), k=g))
-        l=BAR(data,l)
+        #l=BAR(data,l)
+        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
+        gpar  = rgparMS(data=data, g=g, w=z,l=l)
+        
+        for (j in 1:n)  gpar = EMgrstepMS(data=data, gpar=gpar, v=1, label= l,  w=z)
+    }
+    else if(method=="random"){
+        #l=kmeans(data,g)
+        l=round(runif(nrow(data))*(g-1)+1)
+        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
+        gpar  = rgparMS(data=data, g=g, w=z,l=l)
     }
     else{ l=kmeans(data,g)
-        l=l$centers}
+        l=l$cluster#$centers}
+        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
+        gpar  = rgparMS(data=data, g=g, w=z,l=l)
+        
+        for (j in 1:n)  gpar = EMgrstepMS(data=data, gpar=gpar, v=1, label= l,  w=z)}
+        return(gpar)
     return(l)
 }
 
 
 
 ##########Inizialization
-rgparMS <- function(g=NULL, p=NULL,data, method="kmeans") {
+rgparMS <- function(g=NULL,data, w=NULL,l=NULL) {
+    if (is.null(w) ) w = matrix(1/g, nrow=nrow(data), ncol=g)
 	val = list()
-    l=rmgparMS(g, p,data,method=method)
-	for (k in 1:g) val[[k]] = rparMS(p=p,l,k)
+    # l=rmgparMS(g, p,data,method=method)
+	for (k in 1:g) val[[k]] = rparMS(data=data,wt=w[,k],k)
 	val$pi = rep(1/g,g)
 	return(val)
 }
 
-rparMS <- function(p=NULL,l,k) {
+rparMS <- function(data,wt,k) {
 	par = list()
-	par$mu =l[k,] #rnorm(p,0,.01);
-	par$phi  = rep(1,p);
-	par$alpha = rnorm(p,0,.01);
+    p=ncol(data)
+	par$mu =rnorm(p, apply(data,2,weighted.mean, w=wt), sqrt(1/nrow(data)) )#l[k,] #rnorm(p,0,.01);
+	#par$phi  =  rnorm(p, 0, sqrt(1/nrow(data)) )#rep(1,p);
+	par$alpha =  rnorm(p, 0, sqrt(1/nrow(data)) )#rnorm(p,0,.01);
+    
+    sigma = diag( diag( cov.wt(data, wt = wt, method="ML")$cov) ) #+ diag(apply(data,2,var))*1 # + outer(val$alpha,val$alpha)
+    diag(sigma)=abs(diag(sigma))
+    if(p==1){sigma=var(data)}
+    
+    for(i in 1:p){if(sigma[i,i]<0.1){sigma[i,i]=0.1}}
+    if (any(eigen(sigma)$values <= 0 ) ) val$sigma =  diag(apply(data,2,var))
+    par$gam   = eigen( sigma)$vectors
+    par$phi  = eigen( sigma)$values
 	par$cpl = cbind( rep(1,p), rep(-1/2,p))
     #	par$gam   = diag( rep(1,p) )
-	par$gam   = eigen( cov(matrix(rnorm((p+1)*p), p+1, p)))$vectors
+	#par$gam   = eigen( cov(matrix(rnorm((p+1)*p), p+1, p)))$vectors
+    
 	return(par)
 }
 
@@ -1623,6 +1720,8 @@ EMgrstepMS <- function(data=NULL, gpar=NULL, v=1, label=NULL, w=NULL) {
     
 	G= length(gpar$pi);
 	for (k in 1:G ) {
+		w = weightsMS(data=data, gpar=gpar,v=v)
+		if (!is.null(label)) w = combinewk(weights=w, label= label)
 		gpar[[k]] = updatemaScplpMS(y=data, par=gpar[[k]], weights=w[,k], alpha.known=NULL, v=v)
 	}
 	gpar$pi = apply(w,2,mean)
@@ -1878,44 +1977,71 @@ MAPMS <- function(data, gpar, label=NULL) {
 #################################################################################################################################
 #################################################################################################################################
 #################################################################################################################################
-
-
-rmgparMS <- function(g=NULL, p=NULL,data=NULL, method="kmeans") {
+rmgparMSr <- function(g=NULL, data=NULL, method="kmeans",n=10) {
 	val = list()
 	#set.seed(142857)
     if(method=="modelBased"){
         l=Mclust(data,G=g)$classification
-        l=BAR(data,l)}
+        # l=BAR(data,l)
+        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
+        gpar  = rgparMSr(data=data, g=g, w=z,l=l)
+        
+        for (j in 1:n)  gpar = EMgrstepMSr(data=data, gpar=gpar, v=1, label= l,  w=z)
+    }
     else if(method=="hierarchical"){
         l=(cutree(hclust(dist(data),"ward.D"), k=g))
-        l=BAR(data,l)
+        #l=BAR(data,l)
+        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
+        gpar  = rgparMSr(data=data, g=g, w=z,l=l)
+        
+        for (j in 1:n)  gpar = EMgrstepMSr(data=data, gpar=gpar, v=1, label= l,  w=z)
     }
+    else if(method=="random"){
+        #l=kmeans(data,g)
+        l=round(runif(nrow(data))*(g-1)+1)
+        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
+        gpar  = rgparMSr(data=data, g=g, w=z,l=l)}
     else{ l=kmeans(data,g)
-        l=l$centers}
+        l=l$cluster#$centers}
+    z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
+    gpar  = rgparMSr(data=data, g=g, w=z,l=l)
+    
+        for (j in 1:n)  gpar = EMgrstepMSr(data=data, gpar=gpar, v=1, label= l,  w=z)}
+    return(gpar)
     return(l)
 }
 
 
 
+
 ##########Inizialization
 ####################################change
-rgparMSr <- function(g=NULL, p=NULL,data, method="kmeans") {
+rgparMSr<- function(g=NULL,data, w=NULL,l=NULL) {
+    if (is.null(w) ) w = matrix(1/g, nrow=nrow(data), ncol=g)
 	val = list()
-    l=rmgparMS(g, p,data,method=method)
-	for (k in 1:g) val[[k]] = rparMSr(p=p,l,k)
+    # l=rmgparMS(g, p,data,method=method)
+	for (k in 1:g) val[[k]] = rparMSr(data=data,wt=w[,k],k)
 	val$pi = rep(1/g,g)
 	return(val)
 }
 
 ####################################change
-rparMSr <- function(p=NULL,l,k) {
-	par = list()
-	par$mu =l[k,] #rnorm(p,0,.01);
-	par$phi  = rep(1,p);
-	par$alpha = rnorm(p,0,.01);
-	par$cpl = cbind( rep(1,p), rep(1,p))
-    #	par$gam   = diag( rep(1,p) )
-	par$gam   = eigen( cov(matrix(rnorm((p+1)*p), p+1, p)))$vectors
+rparMSr <- function(data,wt,k) {
+    par = list()
+    p=ncol(data)
+	par$mu =rnorm(p, apply(data,2,weighted.mean, w=wt), sqrt(1/nrow(data)) )#l[k,] #rnorm(p,0,.01);
+	#par$phi  =  rnorm(p, 0, sqrt(1/nrow(data)) )#rep(1,p);
+	par$alpha =  rnorm(p, 0, sqrt(1/nrow(data)) )#rnorm(p,0,.01);
+    
+    sigma = diag( diag( cov.wt(data, wt = wt, method="ML")$cov) ) #+ diag(apply(data,2,var))*1 # + outer(val$alpha,val$alpha)
+    diag(sigma)=abs(diag(sigma))
+    if(p==1){sigma=var(data)}
+    
+    for(i in 1:p){if(sigma[i,i]<0.1){sigma[i,i]=0.1}}
+    if (any(eigen(sigma)$values <= 0 ) ) val$sigma =  diag(apply(data,2,var))
+    par$gam   = eigen( sigma)$vectors
+    par$phi  = eigen( sigma)$values
+    par$cpl = cbind( rep(1,p), rep(1,p))
 	return(par)
 }
 
@@ -1928,6 +2054,9 @@ EMgrstepMSr <- function(data=NULL, gpar=NULL, v=1, label=NULL, w=NULL) {
     
 	G= length(gpar$pi);
 	for (k in 1:G ) {
+		w = weightsMS(data=data, gpar=gpar,v=v)
+		if (!is.null(label)) w = combinewk(weights=w, label= label)
+
 		gpar[[k]] = updatemaScplpMSr(y=data, par=gpar[[k]], weights=w[,k], alpha.known=NULL, v=v)
 	}
 	gpar$pi = apply(w,2,mean)

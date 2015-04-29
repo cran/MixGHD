@@ -31,12 +31,13 @@ MCGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, eps=1e-2,  label=NUL
 		loglik[i] = llik(data, gpar)
 		
 	}
-
+    if(i<max.iter){loglik[i+1:max.iter]=loglik[i]}
 	#BIC=2*loglik[max.iter]-log(nrow(data))*(2*(G-1)+G*(2*pcol+0.5*pcol*(pcol-1))+G*2*pcol+G*2)
     BIC=2*loglik[max.iter]-log(nrow(data))*((G-1)+G*(4*pcol+2+pcol*(pcol-1)/2))
-
+    z=weights(data=data, gpar= gpar)
+    ICL=BIC+sum(log(apply(z,1,max)))
 	par=partrue(gpar,G)
-	val = list(loglik= loglik[1:i], gpar=gpar,par=par, z=weights(data=data, gpar= gpar), map=MAP(data=data, gpar= gpar, label=label),BIC=BIC )
+	val = list(loglik= loglik[1:i], gpar=gpar,par=par, z=z, map=MAP(data=data, gpar= gpar, label=label),BIC=BIC,ICL=ICL )
 	return(val)
 }
 

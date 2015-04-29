@@ -17,23 +17,25 @@ if( scale==TRUE){
 	if ( G < 1) stop('G is not a positive integer')
 	if ( max.iter < 1) stop('max.iter is not a positive integer')
 	
-	if (is.null(gpar0)) gpar = igpar(data=data, g=G, method=method)
+	if (is.null(gpar0)) gpar = try(igpar(data=data, g=G, method=method))
 	else gpar  = gpar0
     
     n=max.iter
 		loglik = numeric(n)
     for (i in 1:3) {
-        gpar = EMgrstepGH(data=data, gpar=gpar, v=1, label = label)	###parameter estimation
+        gpar = try(EMgrstepGH(data=data, gpar=gpar, v=1, label = label))	###parameter estimation
 		loglik[i] = llikGH(data, gpar)}
         
         while ( ( getall(loglik[1:i]) > eps) & (i < (n) ) )  {
             i = i+1
-		gpar = EMgrstepGH(data=data, gpar=gpar, v=1, label = label)	###parameter estimation
+		gpar = try(EMgrstepGH(data=data, gpar=gpar, v=1, label = label))	###parameter estimation
 
 		loglik[i] = llikGH(data, gpar) ##likelyhood
 	}
-
+        if(i<n){loglik[i+1:max.iter]=loglik[i]}
     BIC=2*loglik[n]-log(nrow(data))*((G-1)+G*(2*pcol+2+pcol*(pcol-1)/2))
-	val = list(loglik= loglik, gpar=gpar, z=weightsGH(data=data, gpar= gpar), map=MAPGH(data=data, gpar= gpar, label=label),BIC=BIC )
+    z=weightsGH(data=data, gpar= gpar)
+    ICL=BIC+sum(log(apply(z,1,max)))
+	val = list(loglik= loglik, gpar=gpar, z=z, map=MAPGH(data=data, gpar= gpar, label=label),BIC=BIC,ICL=ICL )
 	return(val)
 }

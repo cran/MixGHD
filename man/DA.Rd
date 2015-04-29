@@ -23,7 +23,7 @@
   \item{method}{ ( optional)  A string indicating the method to be used form discriminant analysis , if not specified GHD is used. Alternative methods are: MGHFA, MSGHD, cMSGHD, MCGHD. %%     ~~Describe \code{true.class} here~~
 }
   
-  \item{starting}{ ( optional)  A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" clustering%%     ~~Describe \code{true.class} here~~
+  \item{starting}{ ( optional)  A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical", random "random", and model based "modelBased" clustering%%     ~~Describe \code{true.class} here~~
 }
 \item{max.iter}{(optional)  A numerical parameter giving  the maximum number of iterations each EM algorithm is allowed to use.
 %%     ~~Describe \code{model} here~~
@@ -71,7 +71,7 @@ testl=lab[91:109,1]
 
 
 ##model estimation
- model=DA(train,trainl,test,testl,method="MSGHD",max.iter=40,starting="hierarchical")
+ model=DA(train,trainl,test,testl,method="MSGHD",max.iter=20,starting="hierarchical")
 
 #result
 model$ARItest}

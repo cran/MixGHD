@@ -30,7 +30,7 @@ if( scale==TRUE)
 		gpar = EMgrstepFA(data=data, gpar=gpar, v=1, label = label)	###parameter estimation	
 		loglik[i] = llikFA(data, gpar) ##likelyhood
 	}
-
+    if(i<n){loglik[i+1:max.iter]=loglik[i]}
 	BIC=2*loglik[n]-log(nrow(data))*((G-1)+G*(3*pcol+2+pcol*q-q*(q-1)/2))
 	val = list(loglik= loglik, gpar=gpar, z=weightsFA(data=data, gpar= gpar), map=MAPFA(data=data, gpar= gpar, label=label) , BIC=BIC)
 	return(val)

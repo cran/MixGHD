@@ -29,7 +29,7 @@ MGHD(data=NULL,gpar0=NULL,G=2,max.iter=100,label=NULL,eps=1e-2,method="kmeans",s
  \item{eps}{ (optional) A number specifying the epsilon value for the convergence criteria used in the EM algorithms. For each algorithm, the criterion is based on the difference between the log-likelihood at an iteration and an asymptotic estimate of the log-likelihood at that iteration. This asymptotic estimate is based on the Aitken acceleration.
 %%     ~~Describe \code{init} here~~
 }
- \item{method}{ ( optional)  A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" clustering%%     ~~Describe \code{true.class} here~~
+ \item{method}{ ( optional)  A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical", random "random", and model based "modelBased" clustering%%     ~~Describe \code{true.class} here~~
 }
  \item{scale}{ ( optional) A  logical value indicating whether or not the data should be scaled, true by default.%%     ~~Describe \code{true.class} here~~
 }
@@ -39,6 +39,7 @@ MGHD(data=NULL,gpar0=NULL,G=2,max.iter=100,label=NULL,eps=1e-2,method="kmeans",s
 }
 \value{A list with components
 	\item{BIC}{Bayesian information criterion value.}
+	\item{ICL}{ICL index.}
 	\item{gpar}{A list of the model parameters. }
 	\item{loglik}{The log-likelihood values.}
 	\item{map}{A vector of integers indicating the maximum a posteriori classifications for the best model.}
