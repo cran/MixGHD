@@ -14,28 +14,31 @@ if( scale==TRUE){
 	if (nrow(data) == 1) stop('nrow(data) is equal to 1')
 	if (any(is.na(data))) stop('No NAs allowed.')
 	if (is.null(G)) stop('G is NULL')
-	if ( G < 1) stop('G is not a positive integer')
+	#if ( G < 1) stop('G is not a positive integer')
 	if ( max.iter < 1) stop('max.iter is not a positive integer')
 	
-	if (is.null(gpar0)) gpar = try(igpar(data=data, g=G, method=method))
-	else gpar  = gpar0
-    
-    n=max.iter
-		loglik = numeric(n)
-    for (i in 1:3) {
-        gpar = try(EMgrstepGH(data=data, gpar=gpar, v=1, label = label))	###parameter estimation
-		loglik[i] = llikGH(data, gpar)}
-        
-        while ( ( getall(loglik[1:i]) > eps) & (i < (n) ) )  {
-            i = i+1
-		gpar = try(EMgrstepGH(data=data, gpar=gpar, v=1, label = label))	###parameter estimation
-
-		loglik[i] = llikGH(data, gpar) ##likelyhood
-	}
-        if(i<n){loglik[i+1:max.iter]=loglik[i]}
-    BIC=2*loglik[n]-log(nrow(data))*((G-1)+G*(2*pcol+2+pcol*(pcol-1)/2))
-    z=weightsGH(data=data, gpar= gpar)
-    ICL=BIC+sum(log(apply(z,1,max)))
-	val = list(loglik= loglik, gpar=gpar, z=z, map=MAPGH(data=data, gpar= gpar, label=label),BIC=BIC,ICL=ICL )
-	return(val)
+    bico=-Inf
+    t=length(G)
+    BIC=matrix(NA,t,1)
+    cont=0
+	for(b in 1:t){
+        mo=try(mainMGHD(data=data, gpar0=gpar0, G=G[b], n=max.iter, eps=eps,  label=label,method= method),silent = TRUE)
+        cont=cont+1
+        if(is.list(mo)){
+            bicn=mo$BIC
+            BIC[cont]=bicn}
+        else{bicn=-Inf
+            BIC[cont]=NA}
+        if(bicn>bico){
+            bico=bicn
+            sg=G[b]
+            model=mo
+        }
+    }
+    val=list(BIC=BIC,model=model)
+    cat("The best model (BIC) for the range of  components used is  G = ", sg,".\nThe BIC for this model is ", bico,".",sep="")
+    return(val)
 }
+
+
+

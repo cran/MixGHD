@@ -10,34 +10,30 @@ MCGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, eps=1e-2,  label=NUL
 	#if (ncol(data) == 1) stop('ncol(data) is equal to 1; This function currently only works with multivariate data p > 1')
 	if (any(is.na(data))) stop('No NAs allowed.')
 	if (is.null(G)) stop('G is NULL')
-	if ( G < 1) stop('G is not a positive integer')
+	#if ( G < 1) stop('G is not a positive integer')
 	if (  max.iter< 1) stop('max.iter is not a positive integer')
 	
-	
-	if (is.null(gpar0)) gpar  = rmgpar(g=G,p=ncol(data),data=data, method=method)
-	else gpar = gpar0
-	
-    
-    
-	loglik = numeric(max.iter)
-	for (i in 1:3) {
-		gpar = EMgrstep(data=data, gpar=gpar, v=1, label = label)
-		loglik[i] = llik(data, gpar)
+
+    bico=-Inf
+    t=length(G)
+    BIC=matrix(NA,t,1)
+    cont=0
+	for(b in 1:t){
+    mo=try(MainMCGHD(data=data, gpar0=gpar0, G=G[b], max.iter, eps,  label, method),silent = TRUE)
+    cont=cont+1
+    if(is.list(mo)){
+        bicn=mo$BIC
+    BIC[cont]=bicn}
+    else{bicn=-Inf
+        BIC[cont]=NA}
+    if(bicn>bico){
+        bico=bicn
+        sg=G[b]
+        model=mo
+    }
+    }
+     val=list(BIC=BIC,model=model)
+    cat("The best model (BIC) for the range of  components used is  G = ", sg,".\nThe BIC for this model is ", bico,".",sep="")
+    return(val)
 	}
-	
-	while ( ( getall(loglik[1:i]) > eps) & (i < (max.iter) ) )  {
-		i = i+1
-		gpar = EMgrstep(data=data, gpar=gpar, v=1, label = label)		
-		loglik[i] = llik(data, gpar)
-		
-	}
-    if(i<max.iter){loglik[i+1:max.iter]=loglik[i]}
-	#BIC=2*loglik[max.iter]-log(nrow(data))*(2*(G-1)+G*(2*pcol+0.5*pcol*(pcol-1))+G*2*pcol+G*2)
-    BIC=2*loglik[max.iter]-log(nrow(data))*((G-1)+G*(4*pcol+2+pcol*(pcol-1)/2))
-    z=weights(data=data, gpar= gpar)
-    ICL=BIC+sum(log(apply(z,1,max)))
-	par=partrue(gpar,G)
-	val = list(loglik= loglik[1:i], gpar=gpar,par=par, z=z, map=MAP(data=data, gpar= gpar, label=label),BIC=BIC,ICL=ICL )
-	return(val)
-}
 

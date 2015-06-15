@@ -19,7 +19,7 @@ label =NULL  ,q=2,eps=1e-2 , method="kmeans", scale=TRUE )
   \item{gpar0}{ (optional) A list containing the initial parameters of the mixture model. See the 'Details' section. 
 %%     ~~Describe \code{q} here~~
 }
-  \item{G}{ A numerical parameter giving the number of clusters.
+  \item{G}{ The range of values for the number of clusters.
 %%     ~~Describe \code{G} here~~
 }
   \item{max.iter}{(optional) A numerical parameter giving the maximum number of iterations each EM algorithm is allowed to use.
@@ -27,7 +27,7 @@ label =NULL  ,q=2,eps=1e-2 , method="kmeans", scale=TRUE )
 }
   \item{label}{ ( optional)  A n dimensional vector, if label[i]=k then observation belongs to group k, If label[i]=0 then observation has no known group, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
 }
- \item{q}{ A numerical parameter giving the number of factors.
+ \item{q}{ The range of values for the number of  factors.
 %%     ~~Describe \code{G} here~~
 }
  \item{eps}{ (optional) A number specifying the epsilon value for the convergence criteria used in the EM algorithms. For each algorithm, the criterion is based on the difference between the log-likelihood at an iteration and an asymptotic estimate of the log-likelihood at that iteration. This asymptotic estimate is based on the Aitken acceleration.
@@ -42,6 +42,8 @@ label =NULL  ,q=2,eps=1e-2 , method="kmeans", scale=TRUE )
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{A list with components
+	\item{BIC}{Bayesian information criterion value for each combination of G and q.}
+	\item{model}{A list containing the following elements for the selected model}
 	\item{BIC}{Bayesian information criterion value.}
 	\item{gpar}{A list of the model parameters. }
 	\item{loglik}{The log-likelihood values.}
@@ -53,11 +55,11 @@ label =NULL  ,q=2,eps=1e-2 , method="kmeans", scale=TRUE )
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\references{C. Tortora,  P.D. McNicholas, and R.P. Browne (2014). A Mixture of Generalized Hyperbolic Factor Analyzers. Arxiv preprint arXiv:1311.6530
+\references{C. Tortora,  P.D. McNicholas, and R.P. Browne (2015). A Mixture of Generalized Hyperbolic Factor Analyzers. Advanced in Data Analysis and Classification.
 %% ~put references to the literature/web site here ~
 }
 \author{Cristina Tortora, Ryan P. Browne, and Paul D. McNicholas.
-Maintainer: Cristina Tortora <ctortora@uoguelph.ca>%%  ~~who you are~~
+Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
 }
 \examples{
 ## Classification
@@ -70,10 +72,10 @@ data(sonar)
  
  
 ##model estimation
-model=MGHFA(data=sonar[,1:60],  G=2, max.iter=25  ,q=2,label=label )
+model=MGHFA(data=sonar[,1:60],  G=2, max.iter=25  ,q=2,label=label)
 
 #result
-table(model$map,sonar[,61])
+table(model$model$map,sonar[,61])
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the

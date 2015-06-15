@@ -8,7 +8,8 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-MGHD(data=NULL,gpar0=NULL,G=2,max.iter=100,label=NULL,eps=1e-2,method="kmeans",scale=TRUE)
+MGHD(data=NULL,gpar0=NULL,G=2,max.iter=100,label=NULL,eps=1e-2,
+method="kmeans",scale=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,7 +19,7 @@ MGHD(data=NULL,gpar0=NULL,G=2,max.iter=100,label=NULL,eps=1e-2,method="kmeans",s
   \item{gpar0}{ (optional) A list containing the initial parameters of the mixture model. See the 'Details' section. 
 %%     ~~Describe \code{q} here~~
 }
-  \item{G}{ A numerical parameter giving the number of clusters.
+  \item{G}{The range of values for the number of clusters.
 %%     ~~Describe \code{G} here~~
 }
   \item{max.iter}{(optional) A numerical parameter giving the maximum number of iterations each EM algorithm is allowed to use.
@@ -38,6 +39,8 @@ MGHD(data=NULL,gpar0=NULL,G=2,max.iter=100,label=NULL,eps=1e-2,method="kmeans",s
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{A list with components
+	\item{BIC}{Bayesian information criterion value for each G.}
+	\item{model}{A list containing the following elements for the selected model}
 	\item{BIC}{Bayesian information criterion value.}
 	\item{ICL}{ICL index.}
 	\item{gpar}{A list of the model parameters. }
@@ -50,11 +53,11 @@ MGHD(data=NULL,gpar0=NULL,G=2,max.iter=100,label=NULL,eps=1e-2,method="kmeans",s
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\references{ R.P. Browne, and  P.D. McNicholas (2013). A Mixture of  Generalized Hyperbolic Distributions. Arxiv preprint arXiv:1305.1036
+\references{ R.P. Browne, and  P.D. McNicholas (2015). A Mixture of  Generalized Hyperbolic Distributions. \emph{Canadian Journal of Statistics}
 %% ~put references to the literature/web site here ~
 }
 \author{Ryan P. Browne, Cristina Tortora
-Maintainer: Cristina Tortora <ctortora@uoguelph.ca>%%  ~~who you are~~
+Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
 }
 \examples{
 ##loading crabs data
@@ -64,8 +67,8 @@ data(crabs)
 model=MGHD(data=crabs[,4:8],  G=2   )
 
 #result
-plot(model$loglik)
-table(model$map, crabs[,2])
+plot(model$model$loglik)
+table(model$model$map, crabs[,2])
 
 ## Classification
 ##loading bankruptcy data
@@ -82,7 +85,7 @@ data(bankruptcy)
 model=MGHD(data=bankruptcy[,2:3],  G=2, label=label )
 
 #result
-table(model$map,bankruptcy[,1])}
+table(model$model$map,bankruptcy[,1])}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ Clustering }

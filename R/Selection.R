@@ -1,3 +1,4 @@
+
 Selection<-function(data,label=NULL, G=2, niter=50,method="GHD",starting="kmeans",max.iter=10,eps=1e-2,labelcl=NULL,q=2,scale=TRUE,criterion="ARI"){
    if( criterion =="ARI"){
        if (is.null(label)) stop('label is null, please use criterion BIC ')
@@ -7,9 +8,9 @@ Selection<-function(data,label=NULL, G=2, niter=50,method="GHD",starting="kmeans
     for(i in 1:niter){
 		it=niter-1
 		while(it<niter){
-      res=try(MGHFA(data,G=G,method=starting,label=labelcl,max.iter=max.iter,q=q,scale=scale,eps=eps))
+      res=try(MGHFASel(data,G=G,method=starting,label=labelcl,max.iter=max.iter,q=q,scale=scale,eps=eps))
 			if(is.list(res)){it=it+1}}
-      adn=adjustedRandIndex(res$map,label)
+      adn=ARI(res$model$map,label)
       if(adn>ad){
         mod=res
         ad=adn}
@@ -19,9 +20,9 @@ Selection<-function(data,label=NULL, G=2, niter=50,method="GHD",starting="kmeans
     for(i in 1:niter){
 		it=niter-1
 		while(it<niter){
-      res=try(MSGHD(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
+      res=try(MSGHDSel(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
 			if(is.list(res)){it=it+1}}
-      adn=adjustedRandIndex(res$map,label)
+      adn=ARI(res$model$map,label)
       if(adn>ad){
         mod=res
         ad=adn}
@@ -30,9 +31,9 @@ Selection<-function(data,label=NULL, G=2, niter=50,method="GHD",starting="kmeans
       for(i in 1:niter){
 		  it=niter-1
 		  while(it<niter){
-          res=try(cMSGHD(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
+          res=try(cMSGHDSel(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
 		  if(is.list(res)){it=it+1}}
-          adn=adjustedRandIndex(res$map,label)
+          adn=ARI(res$model$map,label)
           if(adn>ad){
               mod=res
               ad=adn}
@@ -41,9 +42,9 @@ Selection<-function(data,label=NULL, G=2, niter=50,method="GHD",starting="kmeans
     for(i in 1:niter){
 		it=niter-1
 		while(it<niter){
-      res=try(MCGHD(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
+      res=try(MCGHDSel(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
 			 if(is.list(res)){it=it+1}}
-      adn=adjustedRandIndex(res$map,label)
+      adn=ARI(res$model$map,label)
       if(adn>ad){
         mod=res
         ad=adn}
@@ -52,9 +53,9 @@ Selection<-function(data,label=NULL, G=2, niter=50,method="GHD",starting="kmeans
     for(i in 1:niter){
 		it=niter-1
 		while(it<niter){
-      res=try(MGHD(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
+      res=try(MGHDSel(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
 		 if(is.list(res)){it=it+1}}
-      adn=adjustedRandIndex(res$map,label)
+      adn=ARI(res$model$map,label)
       if(adn>ad){
         mod=res
         ad=adn}
@@ -67,9 +68,9 @@ Selection<-function(data,label=NULL, G=2, niter=50,method="GHD",starting="kmeans
            for(i in 1:niter){
                it=niter-1
                while(it<niter){
-                   res=try(MGHFA(data,G=G,method=starting,label=labelcl,max.iter=max.iter,q=q,scale=scale,eps=eps))
+                   res=try(MGHFASel(data,G=G,method=starting,label=labelcl,max.iter=max.iter,q=q,scale=scale,eps=eps))
                    if(is.list(res)){it=it+1}}
-               icln=res$ICL
+               icln=res$model$ICL
                if(icln>ICL){
                    mod=res
                    ICL=icln}
@@ -79,9 +80,9 @@ Selection<-function(data,label=NULL, G=2, niter=50,method="GHD",starting="kmeans
            for(i in 1:niter){
                it=niter-1
                while(it<niter){
-                   res=try(MSGHD(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
+                   res=try(MSGHDSel(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
                    if(is.list(res)){it=it+1}}
-               ICLn=res$ICL
+               ICLn=res$model$ICL
                if(ICLn>ICL){
                    mod=res
                    ICL=ICLn}
@@ -90,9 +91,9 @@ Selection<-function(data,label=NULL, G=2, niter=50,method="GHD",starting="kmeans
            for(i in 1:niter){
                it=niter-1
                while(it<niter){
-                   res=try(cMSGHD(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
+                   res=try(cMSGHDSel(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
                    if(is.list(res)){it=it+1}}
-               ICLn=res$ICL
+               ICLn=res$model$ICL
                if(ICLn>ICL){
                    mod=res
                    ICL=ICLn}
@@ -102,9 +103,9 @@ Selection<-function(data,label=NULL, G=2, niter=50,method="GHD",starting="kmeans
                it=niter-1
                while(it<niter){
                    
-                   res=try(MCGHD(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
+                   res=try(MCGHDSel(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
                    if(is.list(res)){it=it+1}}
-               ICLn=res$ICL
+               ICLn=res$model$ICL
                if(ICLn>ICL){
                    mod=res
                    ICL=ICLn}}}
@@ -113,16 +114,16 @@ Selection<-function(data,label=NULL, G=2, niter=50,method="GHD",starting="kmeans
                it=niter-1
                while(it<niter){
                    
-                   res=try(MGHD(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
+                   res=try(MGHDSel(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
                    if(is.list(res)){it=it+1}}
-               ICLn=res$ICL
+               ICLn=res$model$ICL
                if(ICLn>ICL){
                    mod=res
                    ICL=ICLn}
            }}
        if(is.null(label)){ad=NA}
        else{
-           ad=adjustedRandIndex(res$map,label)}
+           ad=ARI(res$model$map,label)}
        
        
    }
@@ -135,9 +136,9 @@ Selection<-function(data,label=NULL, G=2, niter=50,method="GHD",starting="kmeans
             for(i in 1:niter){
 				it=niter-1
 				while(it<niter){
-                res=try(MGHFA(data,G=G,method=starting,label=labelcl,max.iter=max.iter,q=q,scale=scale,eps=eps))
+                res=try(MGHFASel(data,G=G,method=starting,label=labelcl,max.iter=max.iter,q=q,scale=scale,eps=eps))
                if(is.list(res)){it=it+1}}
-					bicn=res$BIC
+					bicn=res$model$BIC
                 if(bicn>BIC){
                     mod=res
                     BIC=bicn}
@@ -147,9 +148,9 @@ Selection<-function(data,label=NULL, G=2, niter=50,method="GHD",starting="kmeans
             for(i in 1:niter){
 				it=niter-1
 				while(it<niter){
-                res=try(MSGHD(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
+                res=try(MSGHDSel(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
                 if(is.list(res)){it=it+1}}
-				bicn=res$BIC
+				bicn=res$model$BIC
                 if(bicn>BIC){
                     mod=res
                     BIC=bicn}
@@ -158,9 +159,9 @@ Selection<-function(data,label=NULL, G=2, niter=50,method="GHD",starting="kmeans
             for(i in 1:niter){
 				it=niter-1
 				while(it<niter){
-                res=try(cMSGHD(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
+                res=try(cMSGHDSel(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
 					 if(is.list(res)){it=it+1}}
-                bicn=res$BIC
+                bicn=res$model$BIC
                 if(bicn>BIC){
                     mod=res
                     BIC=bicn}
@@ -170,9 +171,9 @@ Selection<-function(data,label=NULL, G=2, niter=50,method="GHD",starting="kmeans
 				it=niter-1
 				while(it<niter){
 
-                res=try(MCGHD(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
+                res=try(MCGHDSel(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
                 if(is.list(res)){it=it+1}}
-				bicn=res$BIC
+				bicn=res$model$BIC
                 if(bicn>BIC){
                     mod=res
                     BIC=bicn}}}
@@ -181,16 +182,16 @@ Selection<-function(data,label=NULL, G=2, niter=50,method="GHD",starting="kmeans
 				it=niter-1
 				while(it<niter){
 
-                res=try(MGHD(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
+                res=try(MGHDSel(data,G=G,max.iter=max.iter,method=starting,label=labelcl,scale=scale,eps=eps))
                  if(is.list(res)){it=it+1}}
-					bicn=res$BIC
+					bicn=res$model$BIC
                 if(bicn>BIC){
                     mod=res
                     BIC=bicn}
             }}
         if(is.null(label)){ad=NA}
         else{
-            ad=adjustedRandIndex(res$map,label)}
+            ad=ARI(res$model$map,label)}
     
     
     }

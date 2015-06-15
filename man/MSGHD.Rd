@@ -7,7 +7,8 @@
 \description{Carries out model-based clustering using the mixture of multiple scaled  generalized hyperbolic distributions.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
-\usage{MSGHD(data=NULL,gpar0=NULL,G=2,max.iter=100,label=NULL,eps=1e-2,method="km",scale=TRUE)
+\usage{MSGHD(data=NULL,gpar0=NULL,G=2,max.iter=100,label=NULL,eps=1e-2,
+	method="km",scale=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -17,7 +18,7 @@
   \item{gpar0}{ (optional) A list containing the initial parameters of the mixture model. See the 'Details' section. 
 %%     ~~Describe \code{q} here~~
 }
-  \item{G}{ A numerical parameter giving the number of clusters.
+  \item{G}{ The range of values for the number of clusters.
 %%     ~~Describe \code{G} here~~
 }
   \item{max.iter}{(optional)  A numerical parameter giving  the maximum number of iterations each EM algorithm is allowed to use.
@@ -38,6 +39,8 @@
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{A list with components
+	\item{BIC}{Bayesian information criterion value for each G.}
+	\item{model}{A list containing the following elements for the selected model}
 	\item{BIC}{Bayesian information criterion value.}
 	\item{ICL}{ICL index.}
 	\item{gpar}{A list of the model parameters }
@@ -68,7 +71,7 @@ data(banknote)
 model=MSGHD(banknote[,2:7],G=2,max.iter=30)
 
 #result
-table(banknote[,1],model$map)}
+table(banknote[,1],model$model$map)}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ Clustering }

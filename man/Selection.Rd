@@ -1,10 +1,10 @@
 \name{Selection}
 \alias{Selection}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Selection of parameter using the mixture of  generalized hyperbolic distributions.
+\title{Select the best result using the mixture of  generalized hyperbolic distributions.
 %%  ~~function to do ... ~~
 }
-\description{Replicate a routine n times and gives as result the best solution, the available routine are:
+\description{Replicates a routine n times and gives as result the best solution, the available routines are:
 the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the mixture of generalized hyperbolic factor analyzers (MGHFA), the mixture of multiple scaled  generalized hyperbolic distributions (MSGHD), the mixture of convex multiple scaled  generalized hyperbolic distributions (cMSGHD) and the mixture of coaelesed generalized hyperbolic distributions (MCGHD).
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
@@ -56,9 +56,9 @@ the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\references{R.P. Browne, and  P.D. McNicholas (2013). A Mixture of  Generalized Hyperbolic Distributions. Arxiv preprint arXiv:1305.1036\cr
+\references{R.P. Browne, and  P.D. McNicholas (2015). A Mixture of  Generalized Hyperbolic Distributions. Canadian Journal of Statistics\cr
 C. Tortora, B.C. Franczak, R.P. Browne, and  P.D. McNicholas (2014). A Mixture of Coalesced Generalized Hyperbolic Distributions. Arxiv preprint arXiv:1403.2332 \cr
-C. Tortora,  P.D. McNicholas, and R.P. Browne (2014). A Mixture of Generalized Hyperbolic Factor Analyzers. Arxiv preprint arXiv:1311.6530%% ~put references to the literature/web site here ~
+C. Tortora,  P.D. McNicholas, and R.P. Browne (2014). A Mixture of Generalized Hyperbolic Factor Analyzers. Advanced in Data Analysis and Classification%% ~put references to the literature/web site here ~
 }
 \author{Cristina Tortora
 	Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
@@ -71,8 +71,7 @@ C. Tortora,  P.D. McNicholas, and R.P. Browne (2014). A Mixture of Generalized H
 #data(bankruptcy)
 
 ##model estimation
-#mod=Selection(bankruptcy[,2:3],bankruptcy[,1],method="MCGHD")
-
+#mod=Selection(bankruptcy[,2:3],bankruptcy[,1],method="MCGHD",eps=0.001,max.iter=1000,niter=10)
 ##result
 #mod$ARI}
 % Add one or more standard keywords, see file 'KEYWORDS' in the

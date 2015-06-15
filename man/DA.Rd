@@ -7,7 +7,8 @@
 \description{Carries out model-based discriminant analysis using 5 different models: the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the mixture of generalized hyperbolic factor analyzers (MGHFA), the mixture of multiple scaled  generalized hyperbolic distributions (MSGHD),the mixture of convex multiple scaled  generalized hyperbolic distributions (cMSGHD) and the mixture of coaelesed generalized hyperbolic distributions (MCGHD).
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
-\usage{DA(train,trainL,test,testL,method="GHD",starting="km",max.iter=10,eps=1e-2,q=2,scale=TRUE)}
+\usage{DA(train,trainL,test,testL,method="GHD",starting="km",max.iter=10,
+	eps=1e-2,q=2,scale=TRUE)}
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{train}{ A n1 x p matrix or data frame such that rows correspond to observations and columns correspond to variables of the training data set.

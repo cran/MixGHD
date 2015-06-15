@@ -9,10 +9,10 @@
 
 \usage{data(sonar)}
 
-\format{A data frame with 208 observations and 61 columns. The first 60 columns contain the variables. The 61st column gives the material: \code{1} rock), \code{2} metal.}
+\format{A data frame with 208 observations and 61 columns. The first 60 columns contain the variables. The 61st column gives the material: \code{1} rock, \code{2} metal.}
 \source{UCI machine learning repository}
 \references{R.P. Gorman and T. J. Sejnowski (1988) Analysis of hidden units in a layered network trained to classify sonar targets.
  \emph{Neural Networks} \bold{1}: 75-89
 }
 % \examples{}
-\keyword{datasets}
+\keyword{data sets}

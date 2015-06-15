@@ -1,13 +1,14 @@
-\name{rMSGHD}
+\name{cMSGHD}
 \alias{cMSGHD}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Convex mixture of multiple scaled generalized hyperbolic distributions (MSGHD).
+\title{Convex mixture of multiple scaled generalized hyperbolic distributions (cMSGHD).
 %%  ~~function to do ... ~~
 }
 \description{Carries out model-based clustering using the convex mixture of multiple scaled  generalized hyperbolic distributions. The cMSGHD only allows conves level sets.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
-\usage{cMSGHD(data=NULL,gpar0=NULL,G=2,max.iter=100,label=NULL,eps=1e-2,method="km",scale=TRUE)
+\usage{cMSGHD(data=NULL,gpar0=NULL,G=2,max.iter=100,label=NULL,eps=1e-2,
+	method="km",scale=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -17,7 +18,7 @@
   \item{gpar0}{ (optional) A list containing the initial parameters of the mixture model. See the 'Details' section. 
 %%     ~~Describe \code{q} here~~
 }
-  \item{G}{ A numerical parameter giving the number of clusters.
+  \item{G}{ The range of values for the number of clusters.
 %%     ~~Describe \code{G} here~~
 }
   \item{max.iter}{(optional)  A numerical parameter giving  the maximum number of iterations each EM algorithm is allowed to use.
@@ -38,6 +39,8 @@
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{A list with components
+	\item{BIC}{Bayesian information criterion value for each G.}
+	\item{model}{A list containing the following elements for the selected model}
 	\item{BIC}{Bayesian information criterion value.}
 	\item{ICL}{ICL index.}
 	\item{gpar}{A list of the model parameters }
@@ -60,14 +63,25 @@ Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
  \code{\link{MGHD}} \code{\link{MSGHD}}
 }
 \examples{
-##loading banknote data
-data(banknote)
+##Generate random data
+set.seed(3)
+
+mu1 <- mu2 <- c(0,0)
+Sigma1 <- matrix(c(1,0.85,0.85,1),2,2)
+Sigma2 <- matrix(c(1,-0.85,-0.85,1),2,2)
+
+X1 <- mvrnorm(n=150,mu=mu1,Sigma=Sigma1)
+X2 <- mvrnorm(n=150,mu=mu2,Sigma=Sigma2)
+
+X <- rbind(X1,X2)
 
 ##model estimation
-model=cMSGHD(banknote[,2:7],G=2,max.iter=30)
+em=cMSGHD(X,G=2,max.iter=50,method="random")
+
+
 
 #result
-table(banknote[,1],model$map)}
+plot(X,col=em$model$map)}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ Clustering }

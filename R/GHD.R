@@ -1,5 +1,6 @@
 .packageName<-'MixGHD'
 
+
 #################################################################################################################################
 #################################################################################################################################
 #################################################################################################################################
@@ -14,6 +15,39 @@
 
 
 ###################################### Main ##########################################
+
+
+
+MainMCGHD=function(data=NULL, gpar0=NULL, G=2, max.iter=100, eps=1e-2,  label=NULL, method="km"){
+pcol=ncol(data)
+
+if (is.null(gpar0)) gpar  = rmgpar(g=G,p=ncol(data),data=data, method=method)
+else gpar = gpar0
+
+
+
+loglik = numeric(max.iter)
+for (i in 1:3) {
+    gpar = EMgrstep(data=data, gpar=gpar, v=1, label = label)
+    loglik[i] = llik(data, gpar)
+}
+
+while ( ( getall(loglik[1:i]) > eps) & (i < (max.iter) ) )  {
+    i = i+1
+    gpar = EMgrstep(data=data, gpar=gpar, v=1, label = label)
+    loglik[i] = llik(data, gpar)
+    
+}
+if(i<max.iter){loglik[i+1:max.iter]=loglik[i]}
+#BIC=2*loglik[max.iter]-log(nrow(data))*(2*(G-1)+G*(2*pcol+0.5*pcol*(pcol-1))+G*2*pcol+G*2)
+BIC=2*loglik[max.iter]-log(nrow(data))*((G-1)+G*(4*pcol+2+pcol*(pcol-1)/2))
+z=weights(data=data, gpar= gpar)
+ICL=BIC+sum(log(apply(z,1,max)))
+par=partrue(gpar,G)
+val = list(loglik= loglik[1:i], gpar=gpar,par=par, z=z, map=MAP(data=data, gpar= gpar, label=label),BIC=BIC,ICL=ICL )
+return(val)
+
+}
 
 
 
@@ -288,6 +322,7 @@ logbesselKvFA <- function(x, y) {
     val[sun] = besselK.nuAsym(x=y[sun], nu=abs(x[sun]), k.max=4, log=TRUE, expon.scaled=FALSE) - y[sun]
     return(val)
 }
+
 besselKv    <- function(x, y) { besselK(x=y, nu=x)}
 
 
@@ -315,7 +350,7 @@ gig2 <- function(x=NULL, par=NULL, invS=NULL) {
 	
 	if (is.null(invS)) invS = ginv(par$sigma)
 	alpha = par$alpha
-	omega = exp(  log(par$cpl[1])  )
+	omega = exp(  log(par$cpl0[1])  )
 	
 	a1 = omega + as.numeric( alpha %*% invS %*% alpha )
 	b1 = omega + as.numeric(mahalanobis(x, center=par$mu, cov=invS, inverted=TRUE))
@@ -388,7 +423,7 @@ rmgpar <- function(g=NULL, p=NULL,data=NULL, method="kmeans",n=10) {
         gpar  = rgparC(data=data, g=g, w=z)
         
         for (j in 1:n)  gpar = EMgrstep(data=data, gpar=gpar, v=1, label= l,  w=z)
-        return(gpar)
+       
         #l=BAR(data,l)
     }
     else if(method=="random"){
@@ -396,6 +431,7 @@ rmgpar <- function(g=NULL, p=NULL,data=NULL, method="kmeans",n=10) {
         l=round(runif(nrow(data))*(g-1)+1)
         z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
         gpar  = rgparC(data=data, g=g, w=z)
+         for (j in 1:n)  gpar = EMgrstep(data=data, gpar=gpar, v=1, label= l,  w=z)
         #l=BAR(data,l)
     }
     else{ l=kmeans(data,g)
@@ -429,7 +465,7 @@ rmparC <- function(data,wt,k) {
     if(p==1){sigma=var(data)}
     
     for(i in 1:p){if(sigma[i,i]<0.1){sigma[i,i]=0.1}}
-    if (any(eigen(sigma)$values <= 0 ) ) val$sigma =  diag(apply(data,2,var))
+    if (any(eigen(sigma)$values <= 0 ) ) par$sigma =  diag(apply(data,2,var))
     par$gam   = eigen( sigma)$vectors
     par$phi  = eigen( sigma)$values
     par$sigma=sigma
@@ -545,7 +581,7 @@ updatemaScplp <- function(y=NULL, par=NULL, weights=NULL, iweights=NULL, alpha.k
     Num2sig=t(matrix(weights*iweights[,2],n,p)*abcM$invW*r)%*%r+(apply(weights*iweights[,2]*abcM$W,2,sum)*alpha.new)%*%t(alpha.new)-(apply(matrix(weights*iweights[,2],n,p)*r,2,sum))%*%t(alpha.new)-(alpha.new)%*%t(apply(matrix(weights*iweights[,2],n,p)*r,2,sum))
 	
     phi.new=diag(Num1sig+Num2sig)/sumw
-    
+
     #Ax = apply(sweep(x, 2, mu.new, "-")^2*abcM$invW, 2, weighted.sum, wt=weights*uwe)/sumw
     #	ax = apply(x, 2, weighted.sum, wt=weights*uwe)/sumw
     #	AxU = apply(sweep(x, 2, mu.new, "-")^2*InvM, 2, weighted.sum, wt=weights*uweU)/sumw
@@ -790,8 +826,25 @@ obj.gam <- function(gam0=NULL, y=NULL, phi=NULL, alpha=NULL, mu=NULL, wt=NULL, u
 #################################################################################################################################
 #################################################################################################################################
 
-
-
+mainMGHFA<-function(data=NULL, gpar0, G, n, label  , eps, method ,q ) {
+    pcol=ncol(data)
+    if (is.null(gpar0)) gpar = igparM(data=data, g=G,q=q,method=method)
+	else gpar  = gpar0
+	loglik = numeric(n)
+	for (i in 1:3) {
+		gpar = EMgrstepFA(data=data, gpar=gpar, v=1, label = label)	###parameter estimation
+		loglik[i] = llikFA(data, gpar) ##likelyhood
+	}
+	while ( ( getall(loglik[1:i]) > eps) & (i < (n) ) )  {
+		i = i+1
+		gpar = EMgrstepFA(data=data, gpar=gpar, v=1, label = label)	###parameter estimation
+		loglik[i] = llikFA(data, gpar) ##likelyhood
+	}
+    if(i<n){loglik[i+1:n]=loglik[i]}
+	BIC=2*loglik[n]-log(nrow(data))*((G-1)+G*(3*pcol+2+pcol*q-q*(q-1)/2))
+	val = list(loglik= loglik, gpar=gpar, z=weightsFA(data=data, gpar= gpar), map=MAPFA(data=data, gpar= gpar, label=label) , BIC=BIC)
+	return(val)
+}
 ####################### Univ CPL
 
 
@@ -1098,95 +1151,6 @@ updatemaScplM2 <- function(x, par, weights=NULL, invS=NULL, alpha.known=NULL, v=
 
 
 
-updatemaScplMbu <- function(x, par, weights=NULL, invS=NULL, alpha.known=NULL,pi=NULL, v=NULL) {
-    ####computation of mu and alpha sigma cpl
-    ##########piu importante intervenire qui!!
-    if (is.null(weights)) weights=rep(1,nrow(x))
-    if (is.null(invS)) invS=ginv(par$sigma)
-    
-    # expectations of w, 1/w, log(w) given x
-    abc = gig2FA(x=x, par=par, invS=invS)
-    d = length(par$mu)
-    
-    sumw = sum(weights)
-    ABC = apply(abc,2,weighted.sum, wt=weights)/sumw
-    if ( is.null(alpha.known) ) {
-        A = ABC[1]
-        B = ABC[2]
-        u = (B - abc[,2])*weights
-        t = (A*abc[,2]-1)*weights
-        T = sum(t)
-        
-        mu.new    = apply(x, 2, weighted.sum, w=t)/T
-        alpha.new = apply(x, 2, weighted.sum, w=u)/T
-    } else {
-        alpha.new = alpha.known
-        mu.new   = apply(x, 2, weighted.mean, w=abc[,2]*weights) - alpha.new/ABC[2]
-    }
-    alpha.new = alpha.new*v
-    
-    
-    
-    
-    par.old = c(  log(par$cpl[1]) , par$cpl[2])
-    #a = optim( par.old, loglikgig4, ABC=ABC)
-    par.ol = c(exp(par.old[1]), par.old[2])
-    a = updateolU(ol=par.ol, ABC=ABC, n=2)
-    #if ( loglikgig4(par.old, ABC) < loglikgig4(par.old, ABC) ) cpl.new = par$cpl
-    #  else cpl.new =  c( rep(exp(a$par[1]), 2), a$par[2])
-    #if(a[1]<=0){a[1]=eps}
-    cpl.new =  c( a[1], a[2])
-    
-    
-    
-    
-    
-    
-    #####second estep
-    d=ncol(x)
-    q=ncol(par$Lambda)
-    var=par$Lambda
-    fi=par$err
-    fi1=ginv(fi)
-    fi1=diag(d)*as.vector(fi1)
-    dia=diag(q)
-    if( length(q)==0){dia=q}
-    inv=fi1-fi1%*%var%*%ginv(dia+t(var)%*%fi1%*%var)%*%t(var)%*%fi1
-    beta=t(var)%*%inv
-    term1=sweep(x,2, FUN ="-", STATS=mu.new)-abc[,1]%*%t(alpha.new)
-    uhat=beta%*%t(term1)
-    euu=diag(q)-beta%*%var+beta%*%t(term1)%*%term1%*%t(beta)
-    
-    va.new=(t(term1*(abc[,2]*weights))%*%t(uhat)%*%ginv(euu))/sum(abc[,2]*weights)
-    
-    A = cov.wt(x, wt=abs(abc[,2]*weights), center=mu.new, method="ML")$cov*ABC[2] #returns a list containing weighted covariance matrix and the mean of the data
-    r = apply(x, 2, weighted.sum, wt=weights)/sumw
-    R = A - (outer( r - mu.new, alpha.new) + outer(alpha.new, r - mu.new)) + outer(alpha.new,alpha.new)*ABC[1]
-    
-	
-    fi.new=diag(R-(t(2*abc[,2]*term1*weights)%*%t(uhat)%*%t(var)-sum(abc[,2]*weights)*(var%*%euu%*%t(var)))/sumw)
-    #fi.new=diag((t(abc[,2]*term1*weights)%*%(term1)-t(2*abc[,2]*term1*weights)%*%t(uhat)%*%t(var)+sum(abc[,2]*weights)*(var%*%euu%*%t(var)))/sumw)
-    #fi.new=1/fi.new
-	
-	
-    #va.new=R%*%t(inv)%*%var
-    #inv=fi1-fi1%*%va.new%*%ginv(dia+t(va.new)%*%fi1%*%va.new)%*%t(va.new)%*%fi1
-    #fi.new=(R%*%t(inv))*diag(d)%*%fi
-    
-    var=va.new%*%t(va.new)+diag(d)*fi.new
-    
-    new.par = list(mu=mu.new, alpha=alpha.new, sigma=var, cpl=cpl.new, Lambda=va.new, err=fi.new )
-    
-    return(new.par)
-}
-
-
-
-
-
-
-
-
 
 
 MAPFA <- function(data, gpar, label=NULL) {
@@ -1347,7 +1311,32 @@ weighted.sum <- function(z,wt,...) return( sum(z*wt,...) )
 #################################################################################################################################
 #################################################################################################################################
 
+mainMGHD<-function(data=NULL, gpar0, G, n, label  , eps, method  ) {
+ 
+ pcol=ncol(data)
+ if (is.null(gpar0)) gpar = try(igpar(data=data, g=G, method=method))
+ else gpar  = gpar0
+ 
 
+ loglik = numeric(n)
+ for (i in 1:3) {
+     gpar = try(EMgrstepGH(data=data, gpar=gpar, v=1, label = label))	###parameter estimation
+     loglik[i] = llikGH(data, gpar)}
+ 
+ while ( ( getall(loglik[1:i]) > eps) & (i < (n) ) )  {
+     i = i+1
+     gpar = try(EMgrstepGH(data=data, gpar=gpar, v=1, label = label))	###parameter estimation
+     
+     loglik[i] = llikGH(data, gpar) ##likelyhood
+ }
+ if(i<n){loglik[i+1:n]=loglik[i]}
+ BIC=2*loglik[n]-log(nrow(data))*((G-1)+G*(2*pcol+2+pcol*(pcol-1)/2))
+ z=weightsGH(data=data, gpar= gpar)
+ ICL=BIC+sum(log(apply(z,1,max)))
+ val = list(loglik= loglik, gpar=gpar, z=z, map=MAPGH(data=data, gpar= gpar, label=label),BIC=BIC,ICL=ICL )
+ return(val)
+
+}
 
 ###Function1
 
@@ -1362,14 +1351,14 @@ igpar <- function(data=NULL, g=NULL, method="kmeans") {
 igpar3 <- function(data=NULL, G=NULL, n=10,label=NULL, method="kmeans") {
     #set.seed(142857)
     if(method=="modelBased"){
-        l=gpcm(data,  G=G, mnames=c("VVV"))$map
+        lw=gpcm(data,  G=G, mnames=c("VVV"))$map
         z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=lw)
         gpar  = rgparGH(data=data, g=G, w=z)
         
         for (j in 1:n) try({ gpar = EMgrstepGH(data=data, gpar=gpar, v=1, label= label,  w=z)}, TRUE)
     }
     else if(method=="hierarchical"){
-        l=(cutree(hclust(dist(data),"ward.D"), k=G))
+        lw=(cutree(hclust(dist(data),"ward.D"), k=G))
         z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=lw)
         gpar  = rgparGH(data=data, g=G, w=z)
         
@@ -1377,10 +1366,10 @@ igpar3 <- function(data=NULL, G=NULL, n=10,label=NULL, method="kmeans") {
     }
     else if(method=="random"){
         #l=kmeans(data,g)
-        l=round(runif(nrow(data))*(G-1)+1)
+        lw=round(runif(nrow(data))*(G-1)+1)
         z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=lw)
         gpar  = rgparGH(data=data, g=G, w=z)
-        
+         for (j in 1:n) try({ gpar = EMgrstepGH(data=data, gpar=gpar, v=1, label= label,  w=z)}, TRUE)
         #l=BAR(data,l)
     }
     
@@ -1651,6 +1640,29 @@ MAPGH <- function(data, gpar, label=NULL) {
 #################################################################################################################################
 #################################################################################################################################
 
+mainMSGHD<-function(data=NULL, gpar0, G, n, label  , eps, method  ) {
+    pcol=ncol(data)
+    if (is.null(gpar0)) gpar = rmgparMS(g=G,p=ncol(data),data,method=method)
+    else gpar  = gpar0
+    
+    loglik = numeric(n)
+    for (i in 1:3) {
+        gpar = EMgrstepMS(data=data, gpar=gpar, v=1, label = label)
+        loglik[i] = llikMS(data, gpar)
+    }
+  	while ( ( getall(loglik[1:i]) > eps) & (i < (n) ) )  {
+		i = i+1
+        gpar = EMgrstepMS(data=data, gpar=gpar, v=1, label = label)
+        loglik[i] = llikMS(data, gpar)
+    }
+    if(i<n){loglik[i+1:n]=loglik[i]}
+    BIC=2*loglik[n]-log(nrow(data))*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
+    z=weightsMS(data=data, gpar= gpar)
+    ICL=BIC+sum(log(apply(z,1,max)))
+    val = list(loglik= loglik, gpar=gpar, z=z, map=MAPMS(data=data, gpar= gpar, label=label), BIC=BIC,ICL=ICL)
+    return(val)
+}
+
 
 rmgparMS <- function(g=NULL, p=NULL,data=NULL, method="kmeans",n=10) {
 	val = list()
@@ -1676,6 +1688,7 @@ rmgparMS <- function(g=NULL, p=NULL,data=NULL, method="kmeans",n=10) {
         l=round(runif(nrow(data))*(g-1)+1)
         z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
         gpar  = rgparMS(data=data, g=g, w=z,l=l)
+        for (j in 1:n)  gpar = EMgrstepMS(data=data, gpar=gpar, v=1, label= l,  w=z)
     }
     else{ l=kmeans(data,g)
         l=l$cluster#$centers}
@@ -1711,7 +1724,7 @@ rparMS <- function(data,wt,k) {
     if(p==1){sigma=var(data)}
     
     for(i in 1:p){if(sigma[i,i]<0.1){sigma[i,i]=0.1}}
-    if (any(eigen(sigma)$values <= 0 ) ) val$sigma =  diag(apply(data,2,var))
+    if (any(eigen(sigma)$values <= 0 ) ) par$sigma =  diag(apply(data,2,var))
     par$gam   = eigen( sigma)$vectors
     par$phi  = eigen( sigma)$values
 	par$cpl = cbind( rep(1,p), rep(-1/2,p))
@@ -1987,11 +2000,48 @@ MAPMS <- function(data, gpar, label=NULL) {
 #################################################################################################################################
 #################################################################################################################################
 #################################################################################################################################
+
+
+
+
+maincMSGHD<-function(data=NULL, gpar0=NULL, G, n, label  ,eps, method ) {
+pcol=ncol(data)
+if (is.null(gpar0)) gpar = rmgparMSr(g=G,data,method=method)
+else gpar  = gpar0
+
+loglik = numeric(n)
+for (i in 1:3) {
+    gpar = EMgrstepMSr(data=data, gpar=gpar, v=1, label = label)
+    loglik[i] = llikMS(data, gpar)
+}
+while ( ( getall(loglik[1:i]) > eps) & (i < (n) ) )  {
+    i = i+1
+    gpar = EMgrstepMSr(data=data, gpar=gpar, v=1, label = label)
+    loglik[i] = llikMS(data, gpar)
+}
+if(i<n){loglik[i+1:n]=loglik[i]}
+BIC=2*loglik[n]-log(nrow(data))*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
+z=weightsMS(data=data, gpar= gpar)
+map=MAPMS(data=data, gpar= gpar, label=label)
+ICL=BIC+sum(log(apply(z,1,max)))
+val = list(loglik= loglik, gpar=gpar, z=z, map=map, BIC=BIC,ICL=ICL)
+return(val)
+
+
+
+
+}
+
+
+
+
+
+
 rmgparMSr <- function(g=NULL, data=NULL, method="kmeans",n=10) {
 	val = list()
 	#set.seed(142857)
     if(method=="modelBased"){
-        l=Mclust(data,G=g)$classification
+        l=gpcm(data,G=g,mnames=c("VVV"))$map
         # l=BAR(data,l)
         z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
         gpar  = rgparMSr(data=data, g=g, w=z,l=l)
@@ -2010,7 +2060,9 @@ rmgparMSr <- function(g=NULL, data=NULL, method="kmeans",n=10) {
         #l=kmeans(data,g)
         l=round(runif(nrow(data))*(g-1)+1)
         z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
-        gpar  = rgparMSr(data=data, g=g, w=z,l=l)}
+        gpar  = rgparMSr(data=data, g=g, w=z,l=l)
+     for (j in 1:n)  gpar = EMgrstepMSr(data=data, gpar=gpar, v=1, label= l,  w=z)
+    }
     else{ l=kmeans(data,g)
         l=l$cluster#$centers}
         z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=g), label=l)
@@ -2048,7 +2100,7 @@ rparMSr <- function(data,wt,k) {
     if(p==1){sigma=var(data)}
     
     for(i in 1:p){if(sigma[i,i]<0.1){sigma[i,i]=0.1}}
-    if (any(eigen(sigma)$values <= 0 ) ) val$sigma =  diag(apply(data,2,var))
+    if (any(eigen(sigma)$values <= 0 ) ) par$sigma =  diag(apply(data,2,var))
     par$gam   = eigen( sigma)$vectors
     par$phi  = eigen( sigma)$values
     par$cpl = cbind( rep(1,p), rep(1,p))
