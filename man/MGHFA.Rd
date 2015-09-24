@@ -9,7 +9,7 @@
 }
 \usage{
 MGHFA(data=NULL, gpar0=NULL, G=2, max.iter=100, 
-label =NULL  ,q=2,eps=1e-2 , method="kmeans", scale=TRUE )
+label =NULL  ,q=2,eps=1e-2 , method="kmeans", scale=TRUE ,nr=10)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -36,6 +36,8 @@ label =NULL  ,q=2,eps=1e-2 , method="kmeans", scale=TRUE )
  \item{method}{ ( optional)  A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical" and model based "modelBased" clustering %%     ~~Describe \code{true.class} here~~
 }
  \item{scale}{ ( optional) A  logical value indicating whether or not the data should be scaled, true by default.%%     ~~Describe \code{true.class} here~~
+}
+ \item{nr}{ ( optional) A  number indicating the number of starting value when random is used, 10 by default.%%     ~~Describe \code{true.class} here~~
 }
 }
 \details{ The arguments gpar0, if specified, is a list structure containing at least one p dimensional vector  mu, alpha and phi, a pxp matrix gamma, a 2 dimensional vector cpl containing omega and lambda.

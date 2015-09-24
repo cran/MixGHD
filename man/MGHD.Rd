@@ -9,7 +9,7 @@
 }
 \usage{
 MGHD(data=NULL,gpar0=NULL,G=2,max.iter=100,label=NULL,eps=1e-2,
-method="kmeans",scale=TRUE)
+method="kmeans",scale=TRUE,nr=10, modelSel="AIC")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -34,15 +34,21 @@ method="kmeans",scale=TRUE)
 }
  \item{scale}{ ( optional) A  logical value indicating whether or not the data should be scaled, true by default.%%     ~~Describe \code{true.class} here~~
 }
+ \item{nr}{ ( optional) A  number indicating the number of starting value when random is used, 10 by default.%%     ~~Describe \code{true.class} here~~
+}
+\item{modelSel}{ ( optional) A string indicating the model selection criterion, if not specified AIC is used. Alternative methods are: BIC,ICL, and AIC3 %%     ~~Describe \code{true.class} here~~
+}
 }
 \details{ The arguments gpar0, if specified, is a list structure containing at least one p dimensional vector  mu, and alpha, a pxp matrix sigma, and a 2 dimensional vector containing  omega and  lambda.
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{A list with components
-	\item{BIC}{Bayesian information criterion value for each G.}
+		\item{index}{Value of the index used for model selection (AIC or ICL or BIC or AIC3) for each G,the index used is specified by the user, if not specified AIC is used.}
 	\item{model}{A list containing the following elements for the selected model}
 	\item{BIC}{Bayesian information criterion value.}
 	\item{ICL}{ICL index.}
+		\item{AIC}{AIC index.}
+	\item{AIC3}{AIC3 index.}
 	\item{gpar}{A list of the model parameters. }
 	\item{loglik}{The log-likelihood values.}
 	\item{map}{A vector of integers indicating the maximum a posteriori classifications for the best model.}
@@ -56,7 +62,7 @@ method="kmeans",scale=TRUE)
 \references{ R.P. Browne, and  P.D. McNicholas (2015). A Mixture of  Generalized Hyperbolic Distributions. \emph{Canadian Journal of Statistics}
 %% ~put references to the literature/web site here ~
 }
-\author{Ryan P. Browne, Cristina Tortora
+\author{Ryan P. Browne and Cristina Tortora
 Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
 }
 \examples{

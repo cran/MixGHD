@@ -4,7 +4,7 @@
 \title{Adjusted Rand Index.
 %%  ~~function to do ... ~~
 }
-\description{Compares two classifications using the ddjusted Rand index (ARI).
+\description{Compares two classifications using the adjusted Rand index (ARI).
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
@@ -36,10 +36,10 @@ Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
 data(banknote)
 
 ##model estimation
-model=MGHD(data=banknote[,2:7],  G=2   )
+res=MGHD(data=banknote[,2:7],  G=2   )
 
 #result
-ARI(model$model$map, banknote[,1])
+ARI(res$model$map, banknote[,1])
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

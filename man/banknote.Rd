@@ -4,7 +4,7 @@
 
 \title{Swiss Banknote data}
 
-\description{ The data set contain 6 measures ond 100 genuine and counterfeit Swiss franc banknotes. }
+\description{ The data set contain 6 measures of 100 genuine and 100 counterfeit Swiss franc banknotes. }
 
 \usage{data(banknote)}
 

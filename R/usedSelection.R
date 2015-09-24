@@ -1,7 +1,7 @@
 ####For selection
 
 
-cMSGHDSel <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL ,eps=1e-2, method="km" ,scale=TRUE) {
+cMSGHDSel <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL ,eps=1e-2, method="km" ,scale=TRUE,nr=NULL) {
   data=as.matrix(data)
   if( scale==TRUE)
   {data=scale(data)}
@@ -24,7 +24,7 @@ cMSGHDSel <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL ,eps
   BIC=matrix(NA,t,1)
   cont=0
   for(b in 1:t){
-    mo=try(maincMSGHD(data=data, gpar0=gpar0, G=G[b], n=max.iter, eps=eps,  label=label, method=method),silent = TRUE)
+    mo=try(maincMSGHD(data=data, gpar0=gpar0, G=G[b], n=max.iter, eps=eps,  label=label, method=method,nr=nr),silent = TRUE)
     cont=cont+1
     if(is.list(mo)){
       bicn=mo$BIC
@@ -42,7 +42,7 @@ cMSGHDSel <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL ,eps
 }
 
 
-MCGHDSel <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, eps=1e-2,  label=NULL, method="km",scale=TRUE ) {
+MCGHDSel <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, eps=1e-2,  label=NULL, method="km",scale=TRUE,nr=NULL ) {
   data=as.matrix(data)
   if( scale==TRUE){
     data=scale(data)}
@@ -62,7 +62,7 @@ MCGHDSel <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, eps=1e-2,  label=
   BIC=matrix(NA,t,1)
   cont=0
   for(b in 1:t){
-    mo=try(MainMCGHD(data=data, gpar0=gpar0, G=G[b], max.iter, eps,  label, method),silent = TRUE)
+    mo=try(MainMCGHD(data=data, gpar0=gpar0, G=G[b], max.iter, eps,  label, method,nr=nr),silent = TRUE)
     cont=cont+1
     if(is.list(mo)){
       bicn=mo$BIC
@@ -81,7 +81,7 @@ MCGHDSel <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, eps=1e-2,  label=
 
 
 
-MGHDSel <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL , eps=1e-2, method="kmeans" ,scale=TRUE ) {
+MGHDSel <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL , eps=1e-2, method="kmeans" ,scale=TRUE,nr=NULL ) {
   ##Expexctation Maximization estimation of GHD
   ##data
   ## G n clusters
@@ -103,7 +103,7 @@ MGHDSel <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL , eps=
   BIC=matrix(NA,t,1)
   cont=0
   for(b in 1:t){
-    mo=try(mainMGHD(data=data, gpar0=gpar0, G=G[b], n=max.iter, eps=eps,  label=label,method= method),silent = TRUE)
+    mo=try(mainMGHD(data=data, gpar0=gpar0, G=G[b], n=max.iter, eps=eps,  label=label,method= method,nr=nr),silent = TRUE)
     cont=cont+1
     if(is.list(mo)){
       bicn=mo$BIC
@@ -122,7 +122,7 @@ MGHDSel <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL , eps=
 
 
 
-MGHFASel<- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL  ,q=2,eps=1e-2, method="kmeans",scale=TRUE ) {
+MGHFASel<- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL  ,q=2,eps=1e-2, method="kmeans",scale=TRUE ,nr=NULL) {
   ##Expexctation Maximization estimation of GHD
   ##data
   ## G n clusters
@@ -154,7 +154,7 @@ MGHFASel<- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL  ,q=2,
       for(b in 1:t){
         ct=1
         while(ct<4 || is.list(mo)==FALSE){
-          mo=try(mainMGHFA(data=data, gpar0=gpar0, G=G[b],q=q[b2], n=max.iter, eps=eps,  label=label,method= method),silent = TRUE)
+          mo=try(mainMGHFA(data=data, gpar0=gpar0, G=G[b],q=q[b2], n=max.iter, eps=eps,  label=label,method= method,nr=nr),silent = TRUE)
           ct=ct+1}
         cont=cont+1
         if(is.list(mo)){
@@ -181,7 +181,7 @@ MGHFASel<- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL  ,q=2,
 
 
 
-MSGHDSel <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL ,eps=1e-2, method="km",scale=TRUE ) {
+MSGHDSel <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL ,eps=1e-2, method="km",scale=TRUE,nr=NULL ) {
   data=as.matrix(data)
   if( scale==TRUE)
   {data=scale(data)}
@@ -202,7 +202,7 @@ MSGHDSel <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL ,eps=
   BIC=matrix(NA,t,1)
   cont=0
   for(b in 1:t){
-    mo=try(mainMSGHD(data=data, gpar0=gpar0, G=G[b], n=max.iter, eps=eps,  label=label,method= method),silent = TRUE)
+    mo=try(mainMSGHD(data=data, gpar0=gpar0, G=G[b], n=max.iter, eps=eps,  label=label,method= method,nr=nr),silent = TRUE)
     cont=cont+1
     if(is.list(mo)){
       bicn=mo$BIC

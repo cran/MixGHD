@@ -1,5 +1,5 @@
 
-MGHFA<- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL  ,q=2,eps=1e-2, method="kmeans",scale=TRUE ) {
+MGHFA<- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL  ,q=2,eps=1e-2, method="kmeans",scale=TRUE ,nr=10) {
 ##Expexctation Maximization estimation of GHD
 ##data
 ## G n clusters
@@ -23,7 +23,7 @@ if( scale==TRUE)
     BIC=matrix(NA,t,tq)
     cont=0
     if(length(G)==1&length(q)==1){
-        mo=(mainMGHFA(data=data, gpar0=gpar0, G=G,q=q, n=max.iter, eps=eps,  label=label,method= method))#,silent = TRUE
+        mo=(mainMGHFA(data=data, gpar0=gpar0, G=G,q=q, n=max.iter, eps=eps,  label=label,method= method,nr=nr))#,silent = TRUE
         val=list(BIC=mo$BIC,model=mo)
     }
     else{

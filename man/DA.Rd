@@ -7,7 +7,7 @@
 \description{Carries out model-based discriminant analysis using 5 different models: the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the mixture of generalized hyperbolic factor analyzers (MGHFA), the mixture of multiple scaled  generalized hyperbolic distributions (MSGHD),the mixture of convex multiple scaled  generalized hyperbolic distributions (cMSGHD) and the mixture of coaelesed generalized hyperbolic distributions (MCGHD).
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
-\usage{DA(train,trainL,test,testL,method="GHD",starting="km",max.iter=10,
+\usage{DA(train,trainL,test,testL,method="MGHD",max.iter=100,
 	eps=1e-2,q=2,scale=TRUE)}
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -21,11 +21,9 @@
 }
 \item{testL}{ A n2 dimensional vector of membership for the units of the test set. If testL[i]=k then observation belongs to group k. %%     ~~Describe \code{true.class} here~~
 }
-  \item{method}{ ( optional)  A string indicating the method to be used form discriminant analysis , if not specified GHD is used. Alternative methods are: MGHFA, MSGHD, cMSGHD, MCGHD. %%     ~~Describe \code{true.class} here~~
+  \item{method}{ ( optional)  A string indicating the method to be used form discriminant analysis , if not specified MGHD is used. Alternative methods are: MGHFA, MSGHD, cMSGHD, MCGHD. %%     ~~Describe \code{true.class} here~~
 }
   
-  \item{starting}{ ( optional)  A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical", random "random", and model based "modelBased" clustering%%     ~~Describe \code{true.class} here~~
-}
 \item{max.iter}{(optional)  A numerical parameter giving  the maximum number of iterations each EM algorithm is allowed to use.
 %%     ~~Describe \code{model} here~~
 }
@@ -56,23 +54,20 @@ C. Tortora,  P.D. McNicholas, and R.P. Browne (2014). A Mixture of Generalized H
 	Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
 }
 \seealso{
- \code{\link{MGHD}} \code{\link{MGHFA}} \code{\link{MSGHD}} \code{\link{cMSGHD}} \code{\link{MCGHD}}
+ \code{\link{MGHD}} \code{\link{MGHFA}} \code{\link{MSGHD}} \code{\link{cMSGHD}} \code{\link{MCGHD}} \code{\link{ARI}}
 }
 \examples{
-##loading crabs data
-data(crabs)
+##loading banknote data
+data(banknote)
+banknote[,1]=as.numeric(factor(banknote[,1]))
 
 
 ##divide the data in training set and test set
-lab=rbind(matrix(1,100,1),matrix(2,100,1))
-train=crabs[c(1:90,110:200),4:8]
-trainl=lab[c(1:90,110:200),1]
-test=crabs[91:109,4:8]
-testl=lab[91:109,1]
-
+train=banknote[c(1:74,126:200),]
+test=banknote[75:125,]
 
 ##model estimation
- model=DA(train,trainl,test,testl,method="MSGHD",max.iter=20,starting="hierarchical")
+ model=DA(train[,2:7],train[,1],test[,2:7],test[,1],method="MSGHD",max.iter=20)
 
 #result
 model$ARItest}
