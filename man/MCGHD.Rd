@@ -27,7 +27,7 @@
   \item{eps}{ (optional) A number specifying the epsilon value for the convergence criteria used in the EM algorithms. For each algorithm, the criterion is based on the difference between the log-likelihood at an iteration and an asymptotic estimate of the log-likelihood at that iteration. This asymptotic estimate is based on the Aitken acceleration.
 %%     ~~Describe \code{init} here~~
 }
-  \item{label}{ ( optional)  A n dimensional vector, if label[i]=k then observation belongs to group k, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
+  \item{label}{ ( optional)  A n dimensional vector, if label[i]=k then observation i belongs to group k, If label[i]=0 then observation i has no known group, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
 }
   \item{method}{ ( optional)   A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical", random "random", and model based "modelBased" %%     ~~Describe \code{true.class} here~~
 }
@@ -59,7 +59,7 @@
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\references{C. Tortora, B.C. Franczak, R.P. Browne, Aisha ElSherbiny, and  P.D. McNicholas (2014). A Mixture of Coalesced Generalized Hyperbolic Distributions. Arxiv preprint arXiv:1403.2332v5
+\references{C. Tortora, A. ElSherbiny, B.C. Franczak, R.P. Browne,  and  P.D. McNicholas (2016). A Mixture of Coalesced Generalized Hyperbolic Distributions. Arxiv preprint arXiv:1403.2332v7
 %% ~put references to the literature/web site here ~
 }
 \author{Cristina Tortora, Ryan P. Browne, Brian C. Franczak and Paul D. McNicholas.

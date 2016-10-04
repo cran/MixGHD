@@ -25,7 +25,7 @@ method="kmeans",scale=TRUE,nr=10, modelSel="AIC")
   \item{max.iter}{(optional) A numerical parameter giving the maximum number of iterations each EM algorithm is allowed to use.
 %%     ~~Describe \code{model} here~~
 }
-   \item{label}{ ( optional)  A n dimensional vector, if label[i]=k then observation belongs to group k, If label[i]=0 then observation has no known group, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
+   \item{label}{ ( optional)  A n dimensional vector, if label[i]=k then observation i belongs to group k, If label[i]=0 then observation i has no known group, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
 }
  \item{eps}{ (optional) A number specifying the epsilon value for the convergence criteria used in the EM algorithms. For each algorithm, the criterion is based on the difference between the log-likelihood at an iteration and an asymptotic estimate of the log-likelihood at that iteration. This asymptotic estimate is based on the Aitken acceleration.
 %%     ~~Describe \code{init} here~~
@@ -62,7 +62,7 @@ method="kmeans",scale=TRUE,nr=10, modelSel="AIC")
 \references{ R.P. Browne, and  P.D. McNicholas (2015). A Mixture of  Generalized Hyperbolic Distributions. \emph{Canadian Journal of Statistics}
 %% ~put references to the literature/web site here ~
 }
-\author{Ryan P. Browne and Cristina Tortora
+\author{Ryan P. Browne, Cristina Tortora, Aisha ElSherbiny, and Paul D. McNicholas
 Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
 }
 \examples{

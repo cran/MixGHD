@@ -32,7 +32,7 @@ ARI(x=NULL, y=NULL)
 Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
 }
 \examples{
-##loading crabs data
+##loading banknote data
 data(banknote)
 
 ##model estimation

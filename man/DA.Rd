@@ -7,7 +7,7 @@
 \description{Carries out model-based discriminant analysis using 5 different models: the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the mixture of generalized hyperbolic factor analyzers (MGHFA), the mixture of multiple scaled  generalized hyperbolic distributions (MSGHD),the mixture of convex multiple scaled  generalized hyperbolic distributions (cMSGHD) and the mixture of coaelesed generalized hyperbolic distributions (MCGHD).
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
-\usage{DA(train,trainL,test,testL,method="MGHD",max.iter=100,
+\usage{DA(train,trainL,test,testL,method="MGHD",starting="km",max.iter=100,
 	eps=1e-2,q=2,scale=TRUE)}
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,7 +23,8 @@
 }
   \item{method}{ ( optional)  A string indicating the method to be used form discriminant analysis , if not specified MGHD is used. Alternative methods are: MGHFA, MSGHD, cMSGHD, MCGHD. %%     ~~Describe \code{true.class} here~~
 }
-  
+   \item{starting}{ ( optional) A string indicating the initialization criterion, if not specified kmeans clustering is used. Alternative methods are: hierarchical "hierarchical",random "random", kmedoids "kmedoids", and model based "modelBased" %%     ~~Describe \code{true.class} here~~
+}
 \item{max.iter}{(optional)  A numerical parameter giving  the maximum number of iterations each EM algorithm is allowed to use.
 %%     ~~Describe \code{model} here~~
 }

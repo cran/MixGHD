@@ -25,7 +25,7 @@
 %%     ~~Describe \code{model} here~~
 }
  
-  \item{label}{ ( optional)  A n dimensional vector, if label[i]=k then observation belongs to group k, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
+  \item{label}{ ( optional)  A n dimensional vector, if label[i]=k then observation i belongs to group k, If label[i]=0 then observation i has no known group, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
 }
  \item{eps}{ (optional) A number specifying the epsilon value for the convergence criteria used in the EM algorithms. For each algorithm, the criterion is based on the difference between the log-likelihood at an iteration and an asymptotic estimate of the log-likelihood at that iteration. This asymptotic estimate is based on the Aitken acceleration.
 %%     ~~Describe \code{init} here~~
@@ -59,10 +59,10 @@
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\references{C. Tortora, B.C. Franczak, R.P. Browne, Aisha ElSherbiny, and  P.D. McNicholas (2014). Mixture of Multiple Scaled Generalized Hyperbolic Distributions. Arxiv preprint arXiv:1403.2332v2
+\references{C. Tortora, B.C. Franczak, R.P. Browne, A. ElSherbiny, and  P.D. McNicholas (2014). Mixture of Multiple Scaled Generalized Hyperbolic Distributions. Arxiv preprint arXiv:1403.2332v2
 %% ~put references to the literature/web site here ~
 }
-\author{Cristina Tortora, Ryan P. Browne, Brian C. Franczak and Paul D. McNicholas.
+\author{Cristina Tortora, Aisha ElSherbiny, Ryan P. Browne, Brian C. Franczak and Paul D. McNicholas.
 Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
 }
 \seealso{

@@ -1,3 +1,82 @@
+      run_EMstepGH <- function(data= NULL, gpar = NULL, loglik=NULL, maxit=NULL, N= NULL, p=NULL, G=NULL, eps=NULL, label=NULL){
+     counter =0
+     mu = matrix(0,nrow=G,ncol=p)
+     alpha = matrix(0,nrow=G,ncol=p)
+     sigmar = matrix(0, nrow=G, ncol=p*p)
+     cpl = matrix(0, nrow = G, ncol=2)
+     for(k in 1:G){
+       par = gpar[[k]]
+       mu[k,] = par$mu
+       alpha[k,] = par$alpha
+       cpl[k,]= par$cpl
+       sigmar[k,] = c(t(par$sigma))
+    }
+    pi = gpar$pi
+    v=1
+    mu1=t(mu)
+    cpl1=t(cpl)
+    alpha1=t(alpha)
+    sigma1=t(sigmar)
+    if(is.null(label) ==T) label=rep(0,N)
+    EMGH <- .C("EMstepGH", as.double(mu1),as.double(alpha1),
+                  as.double(sigma1),as.double(cpl1),as.integer(N), as.integer(p),
+                  as.integer(G), as.double(loglik), as.integer(maxit), as.double(eps),as.integer(label), as.double(pi), as.integer(v), as.double(data), as.integer(counter), PACKAGE="MixGHD")
+    loglik = EMGH[[8]]
+    counter = EMGH[[15]]
+    sigma = array(EMGH[[3]],dim=c(p,p,G))
+    alpha = matrix(EMGH[[2]], nrow=G, ncol=p, byrow=TRUE)
+    cpl = matrix(EMGH[[4]], nrow=G,ncol=2, byrow=TRUE)
+    mu = matrix(EMGH[[1]],nrow =G, ncol=p, byrow=TRUE)
+    gpar = list()
+    for (k in 1:G){
+        gpar[[k]] = list()
+        gpar[[k]]$mu = mu[k,]
+        gpar[[k]]$alpha = alpha[k,]
+        gpar[[k]]$cpl = cpl[k,]
+        gpar[[k]]$sigma = matrix(sigma[,,k], nrow=p, ncol=p, byrow=TRUE)
+    }
+    gpar$pi = EMGH[[12]]
+    val = list(loglik,gpar,counter)
+    return(val)
+
+    }
+mainMGHD<-function(data=NULL, gpar0, G, n, label  , eps, method  ,nr=NULL) {
+
+    pcol=ncol(data)
+    if(!is.null(label)&&min(label>0)){
+        lc=apply(data[label==1,],2,mean)
+        for(i in 2:G){
+            lc=rbind(lc,apply(data[label==i,],2,mean))
+        }
+        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=label)
+        gpar  = rgparGH(data=data, g=G, w=z,l=lc)
+
+    }
+    else{
+        if (is.null(gpar0)) gpar = try(igpar(data=data, g=G, method=method,nr=nr))
+        else gpar  = gpar0}
+
+
+    loglik = numeric(n)
+    for (i in 1:3) {
+        gpar = try(EMgrstepGH(data=data, gpar=gpar, v=1, label = label))        ###parameter estimation
+        loglik[i] = llikGH(data, gpar)}
+     maxit = n
+     N = nrow(data)
+     p = ncol(data)
+ temp <- run_EMstepGH(data, gpar, loglik, maxit, N, p, G, eps, label)
+
+    i = temp[[3]]
+    if(i<n){temp[[1]]=temp[[1]][-(i+1:n)]}
+    BIC=2*temp[[1]][i]-log(nrow(data))*((G-1)+G*(2*pcol+2+pcol*(pcol-1)/2))
+    z=weightsGH(data=data, gpar= temp[[2]])
+    ICL=BIC+2*sum(log(apply(z,1,max)))
+    AIC=2*temp[[1]][i]-2*((G-1)+G*(2*pcol+2+pcol*(pcol-1)/2))
+    AIC3=2*temp[[1]][i]-3*((G-1)+G*(2*pcol+2+pcol*(pcol-1)/2))
+    val = list(loglik= temp[[1]], gpar=temp[[2]], z=z, map=MAPGH(data=data, gpar= temp[[2]], label=label),BIC=BIC,ICL=ICL,AIC=AIC,AIC3=AIC3 )
+    return(val)
+
+}
 
 
 MGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, label =NULL , eps=1e-2, method="kmeans" ,scale=TRUE ,nr=10, modelSel="AIC") {
@@ -36,6 +115,7 @@ if( scale==TRUE){
             model=mo
         }
     }
+#    val=list(BIC=BIC,model=model)
     val=list(index=BIC,model=model)
     cat("The best model (BIC) for the range of  components used is  G = ", sg,".\nThe BIC for this model is ", bico,".",sep="")
          return(val)}
@@ -60,6 +140,7 @@ if( scale==TRUE){
                   model=mo
               }
           }
+#          val=list(ICL=ICL,model=model)
           val=list(index=ICL,model=model)
           cat("The best model (ICL) for the range of  components used is  G = ", sg,".\nThe ICL for this model is ", bico,".",sep="")
           return(val)}
@@ -82,6 +163,7 @@ if( scale==TRUE){
                   model=mo
               }
           }
+#          val=list(AIC3=AIC3,model=model)
           val=list(index=AIC3,model=model)
           cat("The best model (AIC3) for the range of  components used is  G = ", sg,".\nThe AIC3 for this model is ", bico,".",sep="")
           return(val)}

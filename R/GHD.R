@@ -19,54 +19,54 @@
 
 
 
-MainMCGHD=function(data=NULL, gpar0=NULL, G=2, max.iter=100, eps=1e-2,  label=NULL, method="km",nr=NULL){
-    pcol=ncol(data)
+#MainMCGHD=function(data=NULL, gpar0=NULL, G=2, max.iter=100, eps=1e-2,  label=NULL, method="km",nr=NULL){
+#    pcol=ncol(data)
     
-    if(!is.null(label)&&min(label>0)){
-        lc=apply(data[label==1,],2,mean)
-        for(i in 2:G){
-            lc=rbind(lc,apply(data[label==i,],2,mean))
-        }
-        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=label)
-        gpar  = rgparC(data=data, g=G, w=z,l=lc)
+#    if(!is.null(label)&&min(label>0)){
+#        lc=apply(data[label==1,],2,mean)
+#        for(i in 2:G){
+#            lc=rbind(lc,apply(data[label==i,],2,mean))
+#        }
+#        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=label)
+#        gpar  = rgparC(data=data, g=G, w=z,l=lc)
         
-    }
-    else{
-        if (is.null(gpar0)) gpar  = rmgpar(g=G,p=ncol(data),data=data, method=method,nr=nr)
-        else{ gpar = gpar0
-            for(i in 1:G){
-                gpar[[i]]$gam   = eigen( gpar0[[i]]$sigma)$vectors
-                gpar[[i]]$phi   = eigen( gpar0[[i]]$sigma)$values}
-        }
+#    }
+#    else{
+#        if (is.null(gpar0)) gpar  = rmgpar(g=G,p=ncol(data),data=data, method=method,nr=nr)
+#        else{ gpar = gpar0
+#            for(i in 1:G){
+#                gpar[[i]]$gam   = eigen( gpar0[[i]]$sigma)$vectors
+#                gpar[[i]]$phi   = eigen( gpar0[[i]]$sigma)$values}
+#        }
         
-    }
+#    }
     
     
     
-    loglik = numeric(max.iter)
-    for (i in 1:3) {
-        gpar = EMgrstep(data=data, gpar=gpar, v=1, label = label,it=i)
-        loglik[i] = llik(data, gpar)
-    }
+#    loglik = numeric(max.iter)
+#    for (i in 1:3) {
+#        gpar = EMgrstep(data=data, gpar=gpar, v=1, label = label,it=i)
+#        loglik[i] = llik(data, gpar)
+#    }
     
-    while ( ( getall(loglik[1:i]) > eps) & (i < (max.iter) ) )  {
-        i = i+1
-        gpar = EMgrstep(data=data, gpar=gpar, v=1, label = label,it=i)
-        loglik[i] = llik(data, gpar)
-        
-    }
-    if(i<max.iter){loglik=loglik[-(i+1:max.iter)]}
+#    while ( ( getall(loglik[1:i]) > eps) & (i < (max.iter) ) )  {
+#        i = i+1
+#        gpar = EMgrstep(data=data, gpar=gpar, v=1, label = label,it=i)
+#        loglik[i] = llik(data, gpar)
+#        
+#    }
+#    if(i<max.iter){loglik=loglik[-(i+1:max.iter)]}
     #BIC=2*loglik[max.iter]-log(nrow(data))*(2*(G-1)+G*(2*pcol+0.5*pcol*(pcol-1))+G*2*pcol+G*2)=loglik[i]
-    BIC=2*loglik[i]-log(nrow(data))*((G-1)+G*(4*pcol+2+pcol*(pcol-1)/2))
-    AIC=2*loglik[i]-2*((G-1)+G*(4*pcol+2+pcol*(pcol-1)/2))
-    AIC3=2*loglik[i]-3*((G-1)+G*(4*pcol+2+pcol*(pcol-1)/2))
-    z=weights(data=data, gpar= gpar)
-    ICL=BIC+sum(log(apply(z,1,max)))
-    par=partrue(gpar,G)
-    val = list(loglik= loglik[1:i], gpar=gpar,par=par, z=z, map=MAP(data=data, gpar= gpar, label=label),BIC=BIC,ICL=ICL,AIC=AIC,AIC3=AIC3 )
-    return(val)
+#    BIC=2*loglik[i]-log(nrow(data))*((G-1)+G*(4*pcol+2+pcol*(pcol-1)/2))
+#    AIC=2*loglik[i]-2*((G-1)+G*(4*pcol+2+pcol*(pcol-1)/2))
+#    AIC3=2*loglik[i]-3*((G-1)+G*(4*pcol+2+pcol*(pcol-1)/2))
+#    z=weights(data=data, gpar= gpar)
+#    ICL=BIC+sum(log(apply(z,1,max)))
+#    par=partrue(gpar,G)
+#    val = list(loglik= loglik[1:i], gpar=gpar,par=par, z=z, map=MAP(data=data, gpar= gpar, label=label),BIC=BIC,ICL=ICL,AIC=AIC,AIC3=AIC3 )
+#    return(val)
     
-}
+#}
 
 
 
@@ -701,7 +701,6 @@ updategam1 <- function(gam0=NULL, y=NULL, phi=NULL, alpha=NULL, mu=NULL, wt=NULL
     A0 = t(v)  %*% wty
     A1 = t(v1) %*% wty2
     
-    print("ryan1")
     F2 = F0t - t(F1t) - A0 - A1
     z  = svd(-F2/sumw)
     gam = ( (z$v) %*% t(z$u) )
@@ -838,35 +837,35 @@ obj.gam <- function(gam0=NULL, y=NULL, phi=NULL, alpha=NULL, mu=NULL, wt=NULL, u
 #################################################################################################################################
 #################################################################################################################################
 
-mainMGHFA<-function(data=NULL, gpar0, G, n, label  , eps, method ,q,nr=nr ) {
-    pcol=ncol(data)
-    if(!is.null(label)&&min(label>0)){
-        lc=apply(data[label==1,],2,mean)
-        for(i in 2:G){
-            lc=rbind(lc,apply(data[label==i,],2,mean))
-        }
-        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=label)
-        gpar  = rgpar(data=data, g=G, w=z,l=lc)
-        
-    }
-    else{
-        if (is.null(gpar0)) gpar = igparM(data=data, g=G,q=q,method=method,nr=nr)
-        else gpar  = gpar0}
-    loglik = numeric(n)
-    for (i in 1:3) {
-        gpar = EMgrstepFA(data=data, gpar=gpar, v=1, label = label)	###parameter estimation
-        loglik[i] = llikFA(data, gpar) ##likelyhood
-    }
-    while ( ( getall(loglik[1:i]) > eps) & (i < (n) ) )  {
-        i = i+1
-        gpar = EMgrstepFA(data=data, gpar=gpar, v=1, label = label)	###parameter estimation
-        loglik[i] = llikFA(data, gpar) ##likelyhood
-    }
-    if(i<n){loglik=loglik[-(i+1:n)]}
-    BIC=2*loglik[i]-log(nrow(data))*((G-1)+G*(3*pcol+2+pcol*q-q*(q-1)/2))
-    val = list(loglik= loglik, gpar=gpar, z=weightsFA(data=data, gpar= gpar), map=MAPFA(data=data, gpar= gpar, label=label) , BIC=BIC)
-    return(val)
-}
+#mainMGHFA<-function(data=NULL, gpar0, G, n, label  , eps, method ,q,nr=nr ) {
+#    pcol=ncol(data)
+#    if(!is.null(label)&&min(label>0)){
+#        lc=apply(data[label==1,],2,mean)
+#        for(i in 2:G){
+#            lc=rbind(lc,apply(data[label==i,],2,mean))
+#        }
+#        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=label)
+#        gpar  = rgpar(data=data, g=G, w=z,l=lc)
+#        
+#    }
+#    else{
+#        if (is.null(gpar0)) gpar = igparM(data=data, g=G,q=q,method=method,nr=nr)
+#        else gpar  = gpar0}
+#    loglik = numeric(n)
+#    for (i in 1:3) {
+#        gpar = EMgrstepFA(data=data, gpar=gpar, v=1, label = label)	###parameter estimation
+#        loglik[i] = llikFA(data, gpar) ##likelyhood
+#    }
+#    while ( ( getall(loglik[1:i]) > eps) & (i < (n) ) )  {
+#        i = i+1
+#        gpar = EMgrstepFA(data=data, gpar=gpar, v=1, label = label)	###parameter estimation
+#        loglik[i] = llikFA(data, gpar) ##likelyhood
+#    }
+#    if(i<n){loglik=loglik[-(i+1:n)]}
+#    BIC=2*loglik[i]-log(nrow(data))*((G-1)+G*(3*pcol+2+pcol*q-q*(q-1)/2))
+#    val = list(loglik= loglik, gpar=gpar, z=weightsFA(data=data, gpar= gpar), map=MAPFA(data=data, gpar= gpar, label=label) , BIC=BIC)
+#    return(val)
+#}
 ####################### Univ CPL
 
 
@@ -1412,45 +1411,45 @@ weighted.sum <- function(z,wt,...) return( sum(z*wt,...) )
 #################################################################################################################################
 #################################################################################################################################
 
-mainMGHD<-function(data=NULL, gpar0, G, n, label  , eps, method  ,nr=NULL) {
+#mainMGHD<-function(data=NULL, gpar0, G, n, label  , eps, method  ,nr=NULL) {
     
-    pcol=ncol(data)
+#    pcol=ncol(data)
     
-    if(!is.null(label)&&min(label>0)){
-        lc=apply(data[label==1,],2,mean)
-        for(i in 2:G){
-            lc=rbind(lc,apply(data[label==i,],2,mean))
-        }
-        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=label)
-        gpar  = rgparGH(data=data, g=G, w=z,l=lc)
+#    if(!is.null(label)&&min(label>0)){
+#        lc=apply(data[label==1,],2,mean)
+#        for(i in 2:G){
+#            lc=rbind(lc,apply(data[label==i,],2,mean))
+#        }
+#        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=label)
+#        gpar  = rgparGH(data=data, g=G, w=z,l=lc)
         
-    }
-    else{
-        if (is.null(gpar0)) gpar = try(igpar(data=data, g=G, method=method,nr=nr))
-        else gpar  = gpar0}
+#    }
+#    else{
+#        if (is.null(gpar0)) gpar = try(igpar(data=data, g=G, method=method,nr=nr))
+#        else gpar  = gpar0}
     
     
-    loglik = numeric(n)
-    for (i in 1:3) {
-        gpar = try(EMgrstepGH(data=data, gpar=gpar, v=1, label = label))	###parameter estimation
-        loglik[i] = llikGH(data, gpar)}
+#    loglik = numeric(n)
+#    for (i in 1:3) {
+#        gpar = try(EMgrstepGH(data=data, gpar=gpar, v=1, label = label))	###parameter estimation
+#        loglik[i] = llikGH(data, gpar)}
     
-    while ( ( getall(loglik[1:i]) > eps) & (i < (n) ) )  {
-        i = i+1
-        gpar = try(EMgrstepGH(data=data, gpar=gpar, v=1, label = label))	###parameter estimation
+#    while ( ( getall(loglik[1:i]) > eps) & (i < (n) ) )  {
+#        i = i+1
+#        gpar = try(EMgrstepGH(data=data, gpar=gpar, v=1, label = label))	###parameter estimation
         
-        loglik[i] = llikGH(data, gpar) ##likelyhood
-    }
-    if(i<n){loglik=loglik[-(i+1:n)]}
-    BIC=2*loglik[i]-log(nrow(data))*((G-1)+G*(2*pcol+2+pcol*(pcol-1)/2))
-    z=weightsGH(data=data, gpar= gpar)
-    ICL=BIC+sum(log(apply(z,1,max)))
-    AIC=2*loglik[i]-2*((G-1)+G*(2*pcol+2+pcol*(pcol-1)/2))
-    AIC3=2*loglik[i]-3*((G-1)+G*(2*pcol+2+pcol*(pcol-1)/2))
-    val = list(loglik= loglik, gpar=gpar, z=z, map=MAPGH(data=data, gpar= gpar, label=label),BIC=BIC,ICL=ICL,AIC=AIC,AIC3=AIC3 )
-    return(val)
+#        loglik[i] = llikGH(data, gpar) ##likelyhood
+#    }
+#    if(i<n){loglik=loglik[-(i+1:n)]}
+#    BIC=2*loglik[i]-log(nrow(data))*((G-1)+G*(2*pcol+2+pcol*(pcol-1)/2))
+#    z=weightsGH(data=data, gpar= gpar)
+#    ICL=BIC+sum(log(apply(z,1,max)))
+#    AIC=2*loglik[i]-2*((G-1)+G*(2*pcol+2+pcol*(pcol-1)/2))
+#    AIC3=2*loglik[i]-3*((G-1)+G*(2*pcol+2+pcol*(pcol-1)/2))
+#    val = list(loglik= loglik, gpar=gpar, z=z, map=MAPGH(data=data, gpar= gpar, label=label),BIC=BIC,ICL=ICL,AIC=AIC,AIC3=AIC3 )
+#    return(val)
     
-}
+#}
 
 ###Function1
 
@@ -1820,40 +1819,40 @@ MAPGH <- function(data, gpar, label=NULL) {
 #################################################################################################################################
 #################################################################################################################################
 
-mainMSGHD<-function(data=NULL, gpar0, G, n, label  , eps, method ,nr=NULL ) {
-    pcol=ncol(data)
-    if(!is.null(label)&&min(label>0)){
-        lc=apply(data[label==1,],2,mean)
-        for(i in 2:G){
-            lc=rbind(lc,apply(data[label==i,],2,mean))
-        }
-        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=label)
-        gpar  = rgparMS(data=data, g=G, w=z,l=lc)
+#mainMSGHD<-function(data=NULL, gpar0, G, n, label  , eps, method ,nr=NULL ) {
+#    pcol=ncol(data)
+#    if(!is.null(label)&&min(label>0)){
+#        lc=apply(data[label==1,],2,mean)
+#        for(i in 2:G){
+#            lc=rbind(lc,apply(data[label==i,],2,mean))
+#        }
+#        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=label)
+#        gpar  = rgparMS(data=data, g=G, w=z,l=lc)
         
-    }
-    else{
-        if (is.null(gpar0)) gpar = rmgparMS(g=G,p=ncol(data),data,method=method,nr=nr)
-        else gpar  = gpar0}
-    
-    loglik = numeric(n)
-    for (i in 1:3) {
-        gpar = EMgrstepMS(data=data, gpar=gpar, v=1, label = label,it=i)
-        loglik[i] = llikMS(data, gpar)
-    }
-    while ( ( getall(loglik[1:i]) > eps) & (i < (n) ) )  {
-        i = i+1
-        gpar = EMgrstepMS(data=data, gpar=gpar, v=1, label = label,it=i)
-        loglik[i] = llikMS(data, gpar)
-    }
-    if(i<n){loglik=loglik[-(i+1:n)]}
-    BIC=2*loglik[i]-log(nrow(data))*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
-    z=weightsMS(data=data, gpar= gpar)
-    ICL=BIC+sum(log(apply(z,1,max)))
-    AIC=2*loglik[i]-2*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
-    AIC3=2*loglik[i]-3*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
-    val = list(loglik= loglik, gpar=gpar, z=z, map=MAPMS(data=data, gpar= gpar, label=label), BIC=BIC,ICL=ICL,AIC=AIC,AIC3=AIC3)
-    return(val)
-}
+#    }
+#    else{
+#        if (is.null(gpar0)) gpar = rmgparMS(g=G,p=ncol(data),data,method=method,nr=nr)
+#        else gpar  = gpar0}
+#    
+#    loglik = numeric(n)
+#    for (i in 1:3) {
+#        gpar = EMgrstepMS(data=data, gpar=gpar, v=1, label = label,it=i)
+#        loglik[i] = llikMS(data, gpar)
+#    }
+#    while ( ( getall(loglik[1:i]) > eps) & (i < (n) ) )  {
+#        i = i+1
+#        gpar = EMgrstepMS(data=data, gpar=gpar, v=1, label = label,it=i)
+#        loglik[i] = llikMS(data, gpar)
+#    }
+#    if(i<n){loglik=loglik[-(i+1:n)]}
+#    BIC=2*loglik[i]-log(nrow(data))*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
+#    z=weightsMS(data=data, gpar= gpar)
+#    ICL=BIC+sum(log(apply(z,1,max)))
+#    AIC=2*loglik[i]-2*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
+#    AIC3=2*loglik[i]-3*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
+#    val = list(loglik= loglik, gpar=gpar, z=z, map=MAPMS(data=data, gpar= gpar, label=label), BIC=BIC,ICL=ICL,AIC=AIC,AIC3=AIC3)
+#    return(val)
+#}
 
 
 rmgparMS <- function(g=NULL, p=NULL,data=NULL, method="kmeans",n=10,nr=10) {
@@ -2013,7 +2012,6 @@ weightsMS <- function(data=NULL, gpar=NULL, v=1) {
         for (k in 1:G ) zlog[,k] =  dmsghypMS(y=data, par=gpar[[k]], log=TRUE)
         w = t(apply(zlog, 1, function(z,wt,v) {
             x=exp(v*(z + log(wt)) );
-            
             if (sum(x)  == 0) x= rep(1,length(x))
             x =  x/sum(x)
             return( x )
@@ -2257,46 +2255,46 @@ MAPMS <- function(data, gpar, label=NULL) {
 
 
 
-maincMSGHD<-function(data=NULL, gpar0=NULL, G, n, label  ,eps, method,nr=NULL ) {
-    pcol=ncol(data)
-    if(!is.null(label)&&min(label>0)){
-        lc=apply(data[label==1,],2,mean)
-        for(i in 2:G){
-            lc=rbind(lc,apply(data[label==i,],2,mean))
-        }
-        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=label)
-        gpar  = rgparMSr(data=data, g=G, w=z,l=lc)
+#maincMSGHD<-function(data=NULL, gpar0=NULL, G, n, label  ,eps, method,nr=NULL ) {
+#    pcol=ncol(data)
+#    if(!is.null(label)&&min(label>0)){
+#        lc=apply(data[label==1,],2,mean)
+#        for(i in 2:G){
+#            lc=rbind(lc,apply(data[label==i,],2,mean))
+#        }
+#        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=label)
+#        gpar  = rgparMSr(data=data, g=G, w=z,l=lc)
         
-    }
-    else{
-        if (is.null(gpar0)) gpar = rmgparMSr(g=G,data,method=method,nr=nr)
-        else gpar  = gpar0}
+#    }
+#    else{
+#        if (is.null(gpar0)) gpar = rmgparMSr(g=G,data,method=method,nr=nr)
+#        else gpar  = gpar0}
     
-    loglik = numeric(n)
-    for (i in 1:3) {
-        gpar = EMgrstepMSr(data=data, gpar=gpar, v=1, label = label,it=i)
-        loglik[i] = llikMS(data, gpar)
-    }
-    while ( ( getall(loglik[1:i]) > eps) & (i < (n) ) )  {
-        i = i+1
-        gpar = EMgrstepMSr(data=data, gpar=gpar, v=1, label = label,it=i)
-        loglik[i] = llikMS(data, gpar)
-    }
-    if(i<n){loglik=loglik[-(i+1:n)]}
-    BIC=2*loglik[i]-log(nrow(data))*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
-    z=weightsMS(data=data, gpar= gpar)
-    map=MAPMS(data=data, gpar= gpar, label=label)
-    ICL=BIC+sum(log(apply(z,1,max)))
-    AIC=2*loglik[i]-2*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
-    AIC3=2*loglik[i]-3*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
+#    loglik = numeric(n)
+#    for (i in 1:3) {
+#        gpar = EMgrstepMSr(data=data, gpar=gpar, v=1, label = label,it=i)
+#        loglik[i] = llikMS(data, gpar)
+#    }
+#    while ( ( getall(loglik[1:i]) > eps) & (i < (n) ) )  {
+#        i = i+1
+#        gpar = EMgrstepMSr(data=data, gpar=gpar, v=1, label = label,it=i)
+#        loglik[i] = llikMS(data, gpar)
+#    }
+#    if(i<n){loglik=loglik[-(i+1:n)]}
+#    BIC=2*loglik[i]-log(nrow(data))*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
+#    z=weightsMS(data=data, gpar= gpar)
+#    map=MAPMS(data=data, gpar= gpar, label=label)
+#    ICL=BIC+sum(log(apply(z,1,max)))
+#    AIC=2*loglik[i]-2*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
+#    AIC3=2*loglik[i]-3*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
     
-    val = list(loglik= loglik, gpar=gpar, z=z, map=map, BIC=BIC,ICL=ICL,AIC=AIC,AIC3=AIC3)
-    return(val)
-    
-    
+#    val = list(loglik= loglik, gpar=gpar, z=z, map=map, BIC=BIC,ICL=ICL,AIC=AIC,AIC3=AIC3)
+#    return(val)
     
     
-}
+    
+    
+#}
 
 
 
@@ -2389,6 +2387,7 @@ rmgparMSr <- function(g=NULL, data=NULL, method="kmeans",n=10,nr=10) {
         gpar  = rgparMSr(data=data, g=g, w=z,l=lc)
         
         for (j in 1:n) gpar = EMgrstepMSr(data=data, gpar=gpar, v=1, label= l,  w=z,it=j)
+
         return(gpar)}
     
     

@@ -25,7 +25,7 @@ label =NULL  ,q=2,eps=1e-2 , method="kmeans", scale=TRUE ,nr=10)
   \item{max.iter}{(optional) A numerical parameter giving the maximum number of iterations each EM algorithm is allowed to use.
 %%     ~~Describe \code{model} here~~
 }
-  \item{label}{ ( optional)  A n dimensional vector, if label[i]=k then observation belongs to group k, If label[i]=0 then observation has no known group, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
+  \item{label}{ ( optional)  A n dimensional vector, if label[i]=k then observation i belongs to group k, If label[i]=0 then observation i has no known group, if NULL then the data has no known groups. %%     ~~Describe \code{true.class} here~~
 }
  \item{q}{ The range of values for the number of  factors.
 %%     ~~Describe \code{G} here~~
@@ -57,7 +57,7 @@ label =NULL  ,q=2,eps=1e-2 , method="kmeans", scale=TRUE ,nr=10)
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\references{C. Tortora,  P.D. McNicholas, and R.P. Browne (2015). A Mixture of Generalized Hyperbolic Factor Analyzers. Advanced in Data Analysis and Classification.
+\references{C. Tortora, Aisha ElSherbiny, P.D. McNicholas, and R.P. Browne (2015). A Mixture of Generalized Hyperbolic Factor Analyzers. Advanced in Data Analysis and Classification.
 %% ~put references to the literature/web site here ~
 }
 \author{Cristina Tortora, Ryan P. Browne, and Paul D. McNicholas.
@@ -68,7 +68,7 @@ Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
 #70% belong to the training set
 data(sonar)
  label=sonar[,61]
- set.seed(135)
+ set.seed(4)
  a=round(runif(62)*207+1)
  label[a]=0
  
