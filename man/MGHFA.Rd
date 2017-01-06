@@ -43,9 +43,8 @@ label =NULL  ,q=2,eps=1e-2 , method="kmeans", scale=TRUE ,nr=10)
 \details{ The arguments gpar0, if specified, is a list structure containing at least one p dimensional vector  mu, alpha and phi, a pxp matrix gamma, a 2 dimensional vector cpl containing omega and lambda.
 %%  ~~ If necessary, more details than the description above ~~
 }
-\value{A list with components
-	\item{BIC}{Bayesian information criterion value for each combination of G and q.}
-	\item{model}{A list containing the following elements for the selected model}
+\value{A S4 object of class \link{MixGHD}  with slots:
+	\item{Index}{Bayesian information criterion value for each combination of G and q.}
 	\item{BIC}{Bayesian information criterion value.}
 	\item{gpar}{A list of the model parameters. }
 	\item{loglik}{The log-likelihood values.}
@@ -61,7 +60,7 @@ label =NULL  ,q=2,eps=1e-2 , method="kmeans", scale=TRUE ,nr=10)
 %% ~put references to the literature/web site here ~
 }
 \author{Cristina Tortora, Ryan P. Browne, and Paul D. McNicholas.
-Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
+Maintainer: Cristina Tortora <cristina.tortora@sjsu.edu>%%  ~~who you are~~
 }
 \examples{
 ## Classification
@@ -77,7 +76,8 @@ data(sonar)
 model=MGHFA(data=sonar[,1:60],  G=2, max.iter=25  ,q=2,label=label)
 
 #result
-table(model$model$map,sonar[,61])
+table(model@map,sonar[,61])
+summary(model)
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the

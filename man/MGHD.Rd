@@ -42,9 +42,8 @@ method="kmeans",scale=TRUE,nr=10, modelSel="AIC")
 \details{ The arguments gpar0, if specified, is a list structure containing at least one p dimensional vector  mu, and alpha, a pxp matrix sigma, and a 2 dimensional vector containing  omega and  lambda.
 %%  ~~ If necessary, more details than the description above ~~
 }
-\value{A list with components
+\value{A S4 object of class \link{MixGHD} with slots:
 		\item{index}{Value of the index used for model selection (AIC or ICL or BIC or AIC3) for each G,the index used is specified by the user, if not specified AIC is used.}
-	\item{model}{A list containing the following elements for the selected model}
 	\item{BIC}{Bayesian information criterion value.}
 	\item{ICL}{ICL index.}
 		\item{AIC}{AIC index.}
@@ -63,7 +62,7 @@ method="kmeans",scale=TRUE,nr=10, modelSel="AIC")
 %% ~put references to the literature/web site here ~
 }
 \author{Ryan P. Browne, Cristina Tortora, Aisha ElSherbiny, and Paul D. McNicholas
-Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
+Maintainer: Cristina Tortora <cristina.tortora@sjsu.edu>%%  ~~who you are~~
 }
 \examples{
 ##loading crabs data
@@ -73,8 +72,8 @@ data(crabs)
 model=MGHD(data=crabs[,4:8],  G=2   )
 
 #result
-plot(model$model$loglik)
-table(model$model$map, crabs[,2])
+plot(model)
+table(model@map, crabs[,2])
 
 ## Classification
 ##loading bankruptcy data
@@ -91,7 +90,8 @@ data(bankruptcy)
 model=MGHD(data=bankruptcy[,2:3],  G=2, label=label )
 
 #result
-table(model$model$map,bankruptcy[,1])}
+table(model@map,bankruptcy[,1])
+plot(model)}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ Clustering }

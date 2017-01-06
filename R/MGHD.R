@@ -116,7 +116,8 @@ if( scale==TRUE){
         }
     }
 #    val=list(BIC=BIC,model=model)
-    val=list(index=BIC,model=model)
+    val=MixGHD(Index=BIC,AIC=model$AIC,AIC3=model$AIC3,BIC=model$BIC,ICL=model$ICL, map=model$map, gpar=model$gpar, loglik=model$loglik, z=model$z,method="MGHD",data=as.data.frame(data),scale=scale)
+    
     cat("The best model (BIC) for the range of  components used is  G = ", sg,".\nThe BIC for this model is ", bico,".",sep="")
          return(val)}
      
@@ -141,7 +142,8 @@ if( scale==TRUE){
               }
           }
 #          val=list(ICL=ICL,model=model)
-          val=list(index=ICL,model=model)
+          val=MixGHD(Index=ICL,AIC=model$AIC,AIC3=model$AIC3,BIC=model$BIC,ICL=model$ICL, map=model$map, gpar=model$gpar, loglik=model$loglik, z=model$z,method="MGHD",data=as.data.frame(data),scale=scale)
+          
           cat("The best model (ICL) for the range of  components used is  G = ", sg,".\nThe ICL for this model is ", bico,".",sep="")
           return(val)}
       else if(modelSel=="AIC3"){
@@ -164,7 +166,8 @@ if( scale==TRUE){
               }
           }
 #          val=list(AIC3=AIC3,model=model)
-          val=list(index=AIC3,model=model)
+          val=MixGHD(Index=AIC3,AIC=model$AIC,AIC3=model$AIC3,BIC=model$BIC,ICL=model$ICL, map=model$map, gpar=model$gpar, loglik=model$loglik, z=model$z,method="MGHD",data=as.data.frame(data),scale=scale)
+          
           cat("The best model (AIC3) for the range of  components used is  G = ", sg,".\nThe AIC3 for this model is ", bico,".",sep="")
           return(val)}
       else {
@@ -186,7 +189,9 @@ if( scale==TRUE){
                   model=mo
               }
           }
-          val=list(index=AIC,model=model)
+          val=MixGHD(Index=AIC,AIC=model$AIC,AIC3=model$AIC3,BIC=model$BIC,ICL=model$ICL, map=model$map, gpar=model$gpar, loglik=model$loglik, z=model$z,method="MGHD",data=as.data.frame(data),scale=scale)
+        
+          #val=list(index=AIC,model=model)
           cat("The best model (AIC) for the range of  components used is  G = ", sg,".\nThe AIC for this model is ", bico,".",sep="")
           return(val)}
 }

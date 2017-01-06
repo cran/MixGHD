@@ -10,7 +10,7 @@
  *
  * zbsubs.f -- translated by f2c (version 20061008). http://www.netlib.org/f2c/
 */
-
+#include <stdlib.h>
 #include <math.h>
 #include <float.h> /* DBL_MIN etc */
 #include <limits.h>
@@ -255,7 +255,8 @@ zbesh_(double *zr, double *zi, double *fnu,
     k1 = DBL_MIN_EXP;
     k2 = DBL_MAX_EXP;
     r1m5 = M_LOG10_2;
-    k = fmin2(fabs(k1), fabs(k2));
+//    k = fmin2(fabs(k1), fabs(k2));
+    k = fmin2(abs(k1), abs(k2));
     elim = ((double) ((float) k) * r1m5 - 3.) * 2.303;
     k1 = DBL_MANT_DIG - 1;
     aa = r1m5 * (double) ((float) k1);
@@ -661,7 +662,7 @@ zbesi_(double *zr, double *zi, double *fnu,
     k1 = DBL_MIN_EXP;
     k2 = DBL_MAX_EXP;
     r1m5 = M_LOG10_2;
-    k = fmin2(fabs(k1), fabs(k2));
+    k = fmin2(abs(k1), abs(k2));
     elim = ((double) ((float) k) * r1m5 - 3.) * 2.303;
     k1 = DBL_MANT_DIG - 1;
     aa = r1m5 * (double) ((float) k1);
@@ -978,7 +979,7 @@ zbesj_(double *zr, double *zi, double *fnu, int *kode, int *n,
     k1 = DBL_MIN_EXP;
     k2 = DBL_MAX_EXP;
     r1m5 = M_LOG10_2;
-    k = fmin2(fabs(k1), fabs(k2));
+    k = fmin2(abs(k1), abs(k2));
     elim = ((double) ((float) k) * r1m5 - 3.) * 2.303;
     k1 = DBL_MANT_DIG - 1;
     aa = r1m5 * (double) ((float) k1);
@@ -1296,7 +1297,7 @@ zbesk_(double *zr, double *zi, double *fnu, int *kode, int *n,
     k1 = DBL_MIN_EXP;
     k2 = DBL_MAX_EXP;
     r1m5 = M_LOG10_2;
-    k = fmin2(fabs(k1), fabs(k2));
+    k = fmin2(abs(k1), abs(k2));
     elim = ((double) ((float) k) * r1m5 - 3.) * 2.303;
     k1 = DBL_MANT_DIG - 1;
     aa = r1m5 * (double) ((float) k1);
@@ -1697,7 +1698,7 @@ L60:
     tol = fmax2(DBL_EPSILON, 1e-18);
     k1 = DBL_MIN_EXP;
     k2 = DBL_MAX_EXP;
-    k = fmin2(fabs(k1), fabs(k2));
+    k = fmin2(abs(k1), abs(k2));
     d1m5 = M_LOG10_2;
 /* -----------------------------------------------------------------------
      elim is the approximate exponential under- and overflow limit
@@ -2048,7 +2049,7 @@ L70:
     k1 = DBL_MIN_EXP;
     k2 = DBL_MAX_EXP;
     r1m5 = M_LOG10_2;
-    k = fmin2(fabs(k1), fabs(k2));
+    k = fmin2(abs(k1), abs(k2));
     elim = ((double) ((float) k) * r1m5 - 3.) * 2.303;
     k1 = DBL_MANT_DIG - 1;
     aa = r1m5 * (double) ((float) k1);
@@ -2513,7 +2514,7 @@ L70:
  ----------------------------------------------------------------------- */
     k1 = DBL_MIN_EXP;
     k2 = DBL_MAX_EXP;
-    k = fmin2(fabs(k1), fabs(k2));
+    k = fmin2(abs(k1), abs(k2));
     r1m5 = M_LOG10_2;
     elim = ((double) ((float) k) * r1m5 - 3.) * 2.303;
     k1 = DBL_MANT_DIG - 1;
@@ -5490,7 +5491,7 @@ L10:
      power series
  ----------------------------------------------------------------------- */
     zseri_(zr, zi, fnu, kode, &nn, &cyr[1], &cyi[1], &nw, tol, elim, alim);
-    inw = fabs(nw);
+    inw = abs(nw);
     *nz += inw;
     nn -= inw;
     if (nn == 0) {

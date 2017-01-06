@@ -1,9 +1,9 @@
 \name{DA}
 \alias{DA}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Discriminant analysis using the mixture of  generalized hyperbolic distributions.
+\title{Discriminant analysis using the mixture of  generalized hyperbolic distributions.}
 %%  ~~function to do ... ~~
-}
+
 \description{Carries out model-based discriminant analysis using 5 different models: the mixture of multiple scaled  generalized hyperbolic distributions (MGHD), the mixture of generalized hyperbolic factor analyzers (MGHFA), the mixture of multiple scaled  generalized hyperbolic distributions (MSGHD),the mixture of convex multiple scaled  generalized hyperbolic distributions (cMSGHD) and the mixture of coaelesed generalized hyperbolic distributions (MCGHD).
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
@@ -38,9 +38,10 @@
 }
 }
 \value{A list with components
-	\item{model}{A list with the model parameters.}
+	\item{model}{An S4 object of class \code{\link{MixGHD}} with the model parameters.}
 	\item{testMembership}{A vector of integers indicating the membership of the units in the test set}
-	\item{ARI }{A value indicating the adjusted rand index for the test set.}
+	\item{ARItest }{A value indicating the adjusted rand index for the test set.}
+	\item{ARItrain }{A value indicating the adjusted rand index for the train set.}
 %%  ~Describe the value returned
 %%  If it is a LIST, use
 %%  \item{comp1 }{Description of 'comp1'}
@@ -52,10 +53,10 @@ C. Tortora, B.C. Franczak, R.P. Browne, and  P.D. McNicholas (2014). A Mixture o
 C. Tortora,  P.D. McNicholas, and R.P. Browne (2014). A Mixture of Generalized Hyperbolic Factor Analyzers. Arxiv preprint arXiv:1311.6530%% ~put references to the literature/web site here ~
 }
 \author{Cristina Tortora
-	Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
+	Maintainer: Cristina Tortora <cristina.tortora@sjsu.edu>%%  ~~who you are~~
 }
-\seealso{
- \code{\link{MGHD}} \code{\link{MGHFA}} \code{\link{MSGHD}} \code{\link{cMSGHD}} \code{\link{MCGHD}} \code{\link{ARI}}
+\seealso{ \code{"\link[=MixGHD-class]{MixGHD}"} 
+ \code{\link{MGHD}} \code{\link{MGHFA}} \code{\link{MSGHD}} \code{\link{cMSGHD}} \code{\link{MCGHD}} \code{\link{ARI}}  \code{\link{MixGHD-class}} \code{\link{MixGHD}}
 }
 \examples{
 ##loading banknote data

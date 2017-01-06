@@ -114,7 +114,9 @@ if( scale==TRUE)
     cont=0
     if(length(G)==1&length(q)==1){
         mo=(mainMGHFA(data=data, gpar0=gpar0, G=G,q=q, n=max.iter, eps=eps,  label=label,method= method,nr=nr))#,silent = TRUE
-        val=list(BIC=mo$BIC,model=mo)
+        model=mo
+        val=MixGHD(BIC=model$BIC, map=model$map, gpar=model$gpar, loglik=model$loglik, z=model$z,method="MGHFA",data=as.data.frame(data))
+        
     }
     else{
     for(b2 in 1:tq){
@@ -136,7 +138,8 @@ if( scale==TRUE)
             model=mo
         }
     }}
-    val=list(BIC=BIC,model=model)
+      val=MixGHD(Index=BIC,BIC=model$BIC, map=model$map, gpar=model$gpar, loglik=model$loglik, z=model$z,method="MGHFA",data=as.data.frame(data),scale=scale)
+    
 
         cat("The best model (BIC) for the range of factors and components used is  G = ", sg,", and q=", sq ,".\nThe BIC for this model is ", bico,".",sep="")}
 

@@ -29,7 +29,7 @@ ARI(x=NULL, y=NULL)
 %% ~put references to the literature/web site here ~
 }
 \author{Cristina Tortora
-Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
+Maintainer: Cristina Tortora <cristina.tortora@sjsu.edu>%%  ~~who you are~~
 }
 \examples{
 ##loading banknote data
@@ -39,7 +39,7 @@ data(banknote)
 res=MGHD(data=banknote[,2:7],  G=2   )
 
 #result
-ARI(res$model$map, banknote[,1])
+ARI(res@map, banknote[,1])
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

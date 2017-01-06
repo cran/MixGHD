@@ -42,10 +42,9 @@
 \details{ The arguments gpar0, if specified, is a list structure containing at least one p dimensional vector  mu, alpha and phi, a pxp matrix gamma, and a px2 matrix cpl containing the vector omega and the vector lambda.
 %%  ~~ If necessary, more details than the description above ~~
 }
-\value{A list with components
+\value{A S4 object of class \link{MixGHD} with slots:
 	\item{index}{Value of the index used for model selection (AIC or ICL or BIC or AIC3) for each G,the index used is specified by the user, if not specified AIC is used.}
-	\item{model}{A list containing the following elements for the selected model}
-	\item{BIC}{Bayesian information criterion value.}
+		\item{BIC}{Bayesian information criterion value.}
 	\item{ICL}{ICL index.}
 	\item{AIC}{AIC index.}
 	\item{AIC3}{AIC3 index.}
@@ -63,7 +62,7 @@
 %% ~put references to the literature/web site here ~
 }
 \author{Cristina Tortora, Aisha ElSherbiny, Ryan P. Browne, Brian C. Franczak and Paul D. McNicholas.
-Maintainer: Cristina Tortora <ctortora@mcmaster.ca>%%  ~~who you are~~
+Maintainer: Cristina Tortora <cristina.tortora@sjsu.edu>%%  ~~who you are~~
 }
 \seealso{
  \code{\link{MGHD}}
@@ -77,7 +76,9 @@ data(banknote)
 model=MSGHD(banknote[,2:7],G=2,max.iter=30)
 
 #result
-table(banknote[,1],model$model$map)}
+table(banknote[,1],model@map)
+summary(model)
+plot(model)}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ Clustering }

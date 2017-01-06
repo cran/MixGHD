@@ -157,7 +157,8 @@ MCGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, eps=1e-2,  label=NUL
     }
 #########
 #     val=list(BIC=BIC,model=model)
-     val=list(index=BIC,model=model)
+    val=MixGHD(Index=BIC,AIC=model$AIC,AIC3=model$AIC3,BIC=model$BIC,ICL=model$ICL, map=model$map, gpar=model$gpar, loglik=model$loglik, z=model$z,par=model$par,method="MCGHD",data=as.data.frame(data),scale=scale)
+    
     cat("The best model (BIC) for the range of  components used is  G = ", sg,".\nThe BIC for this model is ", bico,".",sep="")
         return(val)}
    else if(modelSel=="ICL"){
@@ -181,7 +182,8 @@ MCGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, eps=1e-2,  label=NUL
             }
         }
 ######        val=list(ICL=ICL,model=model)
-        val=list(index=ICL,model=model)
+        val=MixGHD(Index=ICL,AIC=model$AIC,AIC3=model$AIC3,BIC=model$BIC,ICL=model$ICL, map=model$map, gpar=model$gpar, loglik=model$loglik, z=model$z,par=model$par,method="MCGHD",data=as.data.frame(data),scale=scale)
+        
         cat("The best model (ICL) for the range of  components used is  G = ", sg,".\nThe ICL for this model is ", iclo,".",sep="")
         return(val)}
    else if(modelSel=="AIC3"){
@@ -205,7 +207,8 @@ MCGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, eps=1e-2,  label=NUL
            }
        }
 #####       val=list(AIC3=AIC3,model=model)
-       val=list(index=AIC3,model=model)
+       val=MixGHD(Index=AIC3,AIC=model$AIC,AIC3=model$AIC3,BIC=model$BIC,ICL=model$ICL, map=model$map, gpar=model$gpar, loglik=model$loglik, z=model$z,par=model$par,method="MCGHD",data=as.data.frame(data),scale=scale)
+       
        cat("The best model (AIC3) for the range of  components used is  G = ", sg,".\nThe AIC3 for this model is ", iclo,".",sep="")
        return(val)}
    
@@ -216,7 +219,7 @@ MCGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, eps=1e-2,  label=NUL
        AIC=matrix(NA,t,1)
        cont=0
        for(b in 1:t){
-           mo=try(MainMCGHD(data=data, gpar0=gpar0, G=G[b], max.iter, eps,  label, method,nr=nr),silent = TRUE)
+           mo=MainMCGHD(data=data, gpar0=gpar0, G=G[b], max.iter, eps,  label, method,nr=nr)
            cont=cont+1
            if(is.list(mo)){
                icln=mo$AIC
@@ -230,7 +233,9 @@ MCGHD <- function(data=NULL, gpar0=NULL, G=2, max.iter=100, eps=1e-2,  label=NUL
            }
        }
 #####       val=list(AIC=AIC,model=model)
-       val=list(index=AIC,model=model)
+       
+       val=MixGHD(Index=AIC,AIC=model$AIC,AIC3=model$AIC3,BIC=model$BIC,ICL=model$ICL, map=model$map, gpar=model$gpar, loglik=model$loglik, z=model$z, par=model$par, method="MCGHD",data=as.data.frame(data),scale=scale)
+      
        cat("The best model (AIC) for the range of  components used is  G = ", sg,".\nThe AIC for this model is ", iclo,".",sep="")
        return(val)}
 	}

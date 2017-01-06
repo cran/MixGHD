@@ -1,5 +1,45 @@
 # .packageName<-'MixGHD'
 
+########################################################################################
+############################## Common functions###########################################
+########################################################################################
+
+
+MixGHD=setClass(Class='MixGHD',slots=c(Index="matrix",AIC="numeric",AIC3="numeric",BIC="numeric",ICL="numeric", map="vector", gpar="list", loglik="vector", z="vector",method="character",data="data.frame",par="list",scale="logical"))
+
+plot.MixGHD=function(x,...){
+  plot(x@loglik)
+  if(ncol(x@data)==2){
+    contourpl(x)}
+  else if(ncol(x@data)<10){
+    plot(x@data,col=x@map, pch=x@map)
+  }
+  
+}
+
+
+summary.MixGHD=function(object,...){
+  x=object
+  m=max(x@map)
+  if(x@method=="MGHFA"){
+    cat("The number   components used for the model is  G = ", m, ".",sep="",fill=T)
+    cat("BIC = ", x@BIC,".",sep="",fill=T)
+    
+  }
+  else{
+    cat("The number   components used for the model is  G = ", m, ".",sep="",fill=T)
+    cat("BIC = ", x@BIC,".",sep="")
+    cat(" AIC = ", x@AIC,".",sep="")
+    cat(" AIC3 = ", x@AIC3,".",sep="")
+    cat(" ICL = ", x@ICL,".",sep="",fill=T)}
+  
+  t=as.data.frame( table(x@map))
+  names(t)[1]="Cluster"
+  names(t)[2]="N. of elements"
+  print(t)
+  
+}
+
 
 #################################################################################################################################
 #################################################################################################################################

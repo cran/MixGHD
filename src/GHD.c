@@ -1124,7 +1124,7 @@ void combinewk (double *z, int N, int G, int *labels)
       void grad2(double *x, int N, double *y, double eps, double d, int r, int v, double *vec){
 
      int i,j,k;
-     int  besselkAsym =0;
+//     int  besselkAsym =0;
      double zerotol=sqrt(2.220446e-16/7e-7);
      double *h= malloc(sizeof(double)*N);
      double *a= malloc(sizeof(double)*r*N);
