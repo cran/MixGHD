@@ -68,6 +68,7 @@ Maintainer: Cristina Tortora <cristina.tortora@sjsu.edu>%%  ~~who you are~~
  \code{\link{MGHD}} \code{\link{MSGHD}}
 }
 \examples{
+\donttest{
 ##Generate random data
 set.seed(3)
 
@@ -86,7 +87,7 @@ em=cMSGHD(X,G=2,max.iter=30,method="random",nr=2)
 
 
 #result
-plot(em)}
+plot(em)}}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ Clustering }

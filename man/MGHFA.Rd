@@ -56,7 +56,8 @@ label =NULL  ,q=2,eps=1e-2 , method="kmeans", scale=TRUE ,nr=10)
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\references{C. Tortora, Aisha ElSherbiny, P.D. McNicholas, and R.P. Browne (2015). A Mixture of Generalized Hyperbolic Factor Analyzers. Advanced in Data Analysis and Classification.
+\references{C.Tortora, P.D. McNicholas, and R.P. Browne. Mixtures of Generalized Hyperbolic Factor Analyzers. 
+\emph{Advanced in data analysis and classification} 10(4) p.423-440, 2016.
 %% ~put references to the literature/web site here ~
 }
 \author{Cristina Tortora, Ryan P. Browne, and Paul D. McNicholas.
