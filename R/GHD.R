@@ -1,6 +1,14 @@
 # .packageName<-'MixGHD'
 
 ########################################################################################
+############################## Extract things ###########################################
+########################################################################################
+
+coef=function(input){coef=input@gpar 
+return(coef)}
+predict=function(input){predict=input@map
+return(predict)}
+########################################################################################
 ############################## Common functions###########################################
 ########################################################################################
 
@@ -207,7 +215,9 @@ ddghyp <- function(y=NULL, par=NULL, log=FALSE, invS=NULL) {
     pa = omega + sum(alpha^2/par$phi )
     xmu = sweep(x,2,mu)
     mx = omega + apply( xmu^2, 1, weighted.sum, wt=1/par$phi)
-    kx = sqrt(mx*pa)
+  
+    pa2=rep(pa,length(mx))
+    kx = sqrt(mx * pa2)
     
     lvx = matrix(0, nrow=nrow(x), 4)
     lvx[,1] = (lambda - d/2)*log(kx)
@@ -1254,7 +1264,8 @@ updatemaScplM2 <- function(x, par, weights=NULL, invS=NULL, alpha.known=NULL, v=
     R = A - (outer( r - mu.new, alpha.new) + outer(alpha.new, r - mu.new)) + outer(alpha.new,alpha.new)*ABC[1]
     
     
-    euu=sum(abc[,2]*weights)*diag(q)-sum(abc[,2]*weights)*beta%*%var+beta%*%R%*%t(beta)*sumw
+   # euu=sum(abc[,2]*weights)*diag(q)-sum(abc[,2]*weights)*beta%*%var+beta%*%R%*%t(beta)*sumw
+    euu=sum(weights)*diag(q)-sum(weights)*beta%*%var+beta%*%R%*%t(beta)*sumw
     
     #euu=diag(q)-beta%*%var+beta%*%t(term1)%*%term1%*%t(beta)
     va.new=(t(sweep(x,2, FUN ="-", STATS=mu.new)*(weights))%*%t(uhatb)-t(matrix(alpha.new,nrow(x),d,1)*(weights))%*%t(uhat))%*%ginv(euu)#/sum(abc[,2]*weights)
@@ -1385,7 +1396,8 @@ ddghypFA <- function(x, par, log=FALSE, invS=NULL) {
     pa = omega + alpha %*% invS %*% alpha
     mx = omega + mahalanobis(x, center=mu, cov=invS, inverted=TRUE)
     
-    kx = sqrt(abs(mx*pa))####################################################################################################################
+    pa2=rep(pa,length(mx))
+    kx = sqrt(abs(mx*pa2))####################################################################################################################
     xmu = sweep(x,2,mu)
     
     lvx = matrix(0, nrow=nrow(x), 4)
@@ -1493,9 +1505,9 @@ weighted.sum <- function(z,wt,...) return( sum(z*wt,...) )
 
 ###Function1
 
-igpar <- function(data=NULL, g=NULL, method="kmeans",nr=NULL) {
+igpar <- function(data=NULL, g=NULL, method="kmeans",nr=NULL,label=NULL) {
     ##initialization
-    gpar = igpar3(data=data,g=g, n=10, method=method,nr=nr)
+    gpar = igpar3(data=data,g=g, n=10, method=method,nr=nr,label=label)
     return(gpar)
 }
 
@@ -1788,8 +1800,8 @@ ddghypGH <- function(x, par, log=FALSE, invS=NULL) {
     if (is.null(invS)) invS = ginv(sigma)
     pa = omega + alpha %*% invS %*% alpha
     mx = omega + mahalanobis(x, center=mu, cov=invS, inverted=TRUE)
-    
-    kx = sqrt(mx*pa)
+    pa2=rep(pa,length(mx))
+    kx = sqrt(mx*pa2)
     xmu = sweep(x,2,mu)
     
     lvx = matrix(0, nrow=nrow(x), 4)

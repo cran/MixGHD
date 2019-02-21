@@ -71,16 +71,23 @@
 MainMCGHD=function(data=NULL, gpar0=NULL, G=2, max.iter=100, eps=1e-2,  label=NULL, method="km",nr=NULL){
     pcol=ncol(data)
 
-#    if (is.null(gpar0)) gpar  = rmgpar(g=G,p=ncol(data),data=data, method=method,nr=nr)
-#    else gpar = gpar0
-    if(!is.null(label)&&min(label>0)){
-        lc=apply(data[label==1,],2,mean)
-        for(i in 2:G){
-            lc=rbind(lc,apply(data[label==i,],2,mean))
-        }
-        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=label)
-        gpar  = rgparC(data=data, g=G, w=z,l=lc)
-
+    
+    
+    if(!is.null(label)){
+      lc=apply(data[label==1,],2,mean)
+  #  if(min(label)==0&max(label)==G){
+      for(i in 2:G){
+        lc=rbind(lc,apply(data[label==i,],2,mean))
+      }#}
+   
+    
+    z = combinewk(weights=matrix(1/G,nrow=nrow(data),ncol=G), label=label)
+    if (is.null(gpar0)) gpar  = rgparC(data=data, g=G, w=z,l=lc)
+    else{ gpar  = gpar0
+    for(i in 1:G){
+      gpar[[i]]$gam   = eigen( gpar0[[i]]$sigma)$vectors
+      gpar[[i]]$phi   = eigen( gpar0[[i]]$sigma)$values}
+    }
     }
     else{
     if (is.null(gpar0)) gpar  = rmgpar(g=G,p=ncol(data),data=data, method=method,nr=nr)

@@ -41,7 +41,7 @@ data(bankruptcy)
 
 
 ##model estimation
-model=MSGHD(bankruptcy[,2:3],G=2,max.iter=30)
+model=MCGHD(bankruptcy[,2:3],G=2,max.iter=30)
 
 #result
 

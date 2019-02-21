@@ -43,13 +43,26 @@
 mainMGHD<-function(data=NULL, gpar0, G, n, label  , eps, method  ,nr=NULL) {
 
     pcol=ncol(data)
-    if(!is.null(label)&&min(label>0)){
+    if(!is.null(label)){
         lc=apply(data[label==1,],2,mean)
+       # if(min(label)==0&max(label)==G){
         for(i in 2:G){
             lc=rbind(lc,apply(data[label==i,],2,mean))
         }
-        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=label)
-        gpar  = rgparGH(data=data, g=G, w=z,l=lc)
+        #}
+        # else{
+        #   print("G needs to be equal to max(label)")
+        #   # for(i in 2:max(label)){
+        #   #   lc=rbind(lc,apply(data[label==i,],2,mean))
+        #   # }
+        #   # for(i in (max(label)+1):G){
+        #   #   lc=rbind(lc,apply(data[label==i,],2,mean))
+        #   # }
+        # }
+       
+        z = combinewk(weights=matrix(1/G,nrow=nrow(data),ncol=G), label=label)
+        if (is.null(gpar0)) gpar  = rgparGH(data=data, g=G, w=z,l=lc)
+        else gpar  = gpar0
 
     }
     else{

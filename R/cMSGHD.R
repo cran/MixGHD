@@ -48,15 +48,20 @@ as.double(eps), as.integer(label), as.double(pi), as.integer(v),
 
 maincMSGHD<-function(data=NULL, gpar0=NULL, G, n, label  ,eps, method,nr=NULL ) {
     pcol=ncol(data)
-    if(!is.null(label)&&min(label>0)){
-        lc=apply(data[label==1,],2,mean)
+    if(!is.null(label)){
+      lc=apply(data[label==1,],2,mean)
+   #   if(min(label)==0&max(label)==G){
         for(i in 2:G){
-            lc=rbind(lc,apply(data[label==i,],2,mean))
-        }
-        z = combinewk(weights=matrix(0,nrow=nrow(data),ncol=G), label=label)
-        gpar  = rgparMSr(data=data, g=G, w=z,l=lc)
-
+          lc=rbind(lc,apply(data[label==i,],2,mean))
+        }#}
+  
+      
+      z = combinewk(weights=matrix(1/G,nrow=nrow(data),ncol=G), label=label)
+      if (is.null(gpar0)) gpar  = rgparMSr(data=data, g=G, w=z,l=lc)
+      else gpar  = gpar0
+      
     }
+  
     else{
         if (is.null(gpar0)) gpar = rmgparMSr(g=G,data,method=method,nr=nr)
         else gpar  = gpar0}

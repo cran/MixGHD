@@ -15,6 +15,7 @@
 
 
 
+  
       void BesselK(double zr, int nz, double nu, int expon, int nSeq, double *r, double *r1){
       double *zi= malloc(sizeof(double)*nz);
       double *cyr= malloc(sizeof(double)*nSeq);
@@ -424,7 +425,8 @@ int ginv(__CLPK_integer n, __CLPK_integer lda, double *A, double *B) {
 }
 
 void copymx(double *A, int r, int c, int lda, double *C) {
-  int i,j;
+  int i;
+  int j;
   for(i=0; i < r; i++) {
         for(j=0; j < c; j++)
                 C[i + j*r] = A[i + j*lda];
@@ -433,17 +435,18 @@ void copymx(double *A, int r, int c, int lda, double *C) {
 
 
 void variance(double *x, int N, int p, double *var){
-     int i,j;
+     int i;
+     int j;
      double *mean= malloc(sizeof(double)*p);
-     for(j=0; j<p; i++){
+     for(j=0; j<p; j++){
         mean[j] =0.0;
-        for(i=0; i<N; j++){
+        for(i=0; i<N; i++){
            mean[j] += x[j+i*p];
         }
         mean[j] /=N;
      }
-     for(j=0; j<p; i++){
-        for(i=0; i<N; j++){
+     for(j=0; j<p; j++){
+        for(i=0; i<N; i++){
            var[j] +=pow((x[j+i*p]-mean[j]),2)/((double) N - (double)1.0);
         }
         var[j]=sqrt(var[j]);
@@ -473,7 +476,8 @@ void variance(double *x, int N, int p, double *var){
 
      void mahalanobis(int N, int p, double *x, double *mu0, double *cov, double *delta){
 
-      int i,j;
+      int i;
+      int j;
       char notrans = 'N';
       double alpha = 1.0f;
       double beta = 0.0f;
@@ -486,6 +490,7 @@ void variance(double *x, int N, int p, double *var){
               xmu[i*p+j]=x[i*p+j]-mu0[j];
 
     double *inv = (double *) malloc(sizeof(double)*p*p);
+   
     ginv(p, p, cov, inv);
 //    dgemm_(&notrans,&notrans,&p,&N,&p,&alpha,inv,&p,xmu,&p,&beta,xmucov,&p);
     dgemm_(&notrans,&notrans,&p,&N,&p,&alpha,cov,&p,xmu,&p,&beta,xmucov,&p);
@@ -791,6 +796,7 @@ int determinant(double *A, __CLPK_integer k, __CLPK_integer lda, double *res) {
      double *mx= malloc(sizeof(double)*N);
      double *kx= malloc(sizeof(double)*N);
      double *invS = malloc(sizeof(double)*p*p);
+   
      dgemm_(&notrans,&notrans,&p,&N,&p,&gamma,gam,&p,y,&p,&beta,x,&p);
      omega = cpl0[0];
      lambda= cpl0[1];
