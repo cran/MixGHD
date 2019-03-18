@@ -11,9 +11,11 @@ dMSGHD <- function(data,p,mu=rep(0,p),alpha=rep(0,p),sigma=diag(p),omegav=rep(1,
   phi=eigen(sigma)$values
   }else if(is.null(phi)){cat("phi cannot be NULL")}
   
-  x     = y #%*% (gam)  
+  x     = y %*% (gam)  
   # mu    = par$mu; phi = par$phi;
   # alpha = par$alpha;
+  alpha = alpha%*%gam
+  mu =mu%*%gam
   d = p; chi = omegav; psi = omegav;
   lambda = lambdav;### getting the parameters from the input
   
@@ -43,29 +45,17 @@ dMSGHD <- function(data,p,mu=rep(0,p),alpha=rep(0,p),sigma=diag(p),omegav=rep(1,
 
 dCGHD <- function(data,p,mu=rep(0,p),alpha=rep(0,p),sigma=diag(p),lambda=1,omega=1,omegav=rep(1,p),lambdav=rep(1,p),wg=0.5,gam=NULL,phi=NULL) {
   if(!is.matrix(data))data=matrix(data,length(data)/p,p)
-  y=data
+ 
   
-  par=list()
-  par$mu=mu
-  par$alpha=alpha
-  par$sigma=sigma
-  par$gam=gam
-  par$cpl=matrix(0,p,2)
-  par$cpl[,1]=omegav
-  par$cpl[,2]=lambdav
-  par$cpl0[1]=omega
-  par$cpl0[2]=lambda
-  par$phi=phi
-  par$wg=c(wg,1-wg)
-  if(is.null(gam)){par$gam=eigen(sigma)$vectors
-  par$phi=eigen(sigma)$values
-  }else if(is.null(phi)){cat("phi cannot be NULL")}
+
+  wg=c(wg,1-wg)
   
-  if (par$wg[2] != 0) {
-    val1 = ddghyp(y=data,par=par,log=TRUE)
-    val2 = dmsghyp(y=data,par=par,log=TRUE)
-    val =  par$wg[1]*exp(val1) + par$wg[2]*exp(val2)
-  } else val = ddghyp(y=data,par=par,log=FALSE)
+  if (wg[2] != 0 & wg[1]!=0)  {
+    val1 = dGHD(data,p,mu,alpha,sigma,omega,lambda)
+    val2= dMSGHD(data,p,mu,alpha,sigma,omegav,lambdav,gam,phi)
+    val =  wg[1]*(val1) + wg[2]*(val2)
+  } else if(wg[1]==1) {val = dGHD(data,p,mu,alpha,sigma,omega,lambda)}
+  else{val= dMSGHD(data,p,mu,alpha,sigma,omegav,lambdav,gam,phi)}
   
   return( val )
 }
