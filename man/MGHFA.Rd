@@ -56,11 +56,11 @@ label =NULL  ,q=2,eps=1e-2 , method="kmeans", scale=TRUE ,nr=10)
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\references{C.Tortora, P.D. McNicholas, and R.P. Browne. Mixtures of Generalized Hyperbolic Factor Analyzers. 
-\emph{Advanced in data analysis and classification} 10(4) p.423-440, 2016.
+\references{C.Tortora, P.D. McNicholas, and R.P. Browne (2016). Mixtures of Generalized Hyperbolic Factor Analyzers. 
+\emph{Advanced in data analysis and classification} 10(4) p.423-440.
 %% ~put references to the literature/web site here ~
 }
-\author{Cristina Tortora, Ryan P. Browne, and Paul D. McNicholas.
+\author{Cristina Tortora, Aisha ElSherbiny, Ryan P. Browne, Brian C. Franczak, and Paul D. McNicholas.
 Maintainer: Cristina Tortora <cristina.tortora@sjsu.edu>%%  ~~who you are~~
 }
 \examples{

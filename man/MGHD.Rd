@@ -58,10 +58,10 @@ method="kmeans",scale=TRUE,nr=10, modelSel="AIC")
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\references{ R.P. Browne, and  P.D. McNicholas (2015). A Mixture of  Generalized Hyperbolic Distributions. \emph{Canadian Journal of Statistics}
+\references{R.P. Browne, and  P.D. McNicholas (2015). A Mixture of  Generalized Hyperbolic Distributions. \emph{Canadian Journal of Statistics}, 43.2 176-198
 %% ~put references to the literature/web site here ~
 }
-\author{Ryan P. Browne, Cristina Tortora, Aisha ElSherbiny, and Paul D. McNicholas
+\author{Cristina Tortora, Aisha ElSherbiny, Ryan P. Browne, Brian C. Franczak, and Paul D. McNicholas.
 Maintainer: Cristina Tortora <cristina.tortora@sjsu.edu>%%  ~~who you are~~
 }
 \examples{

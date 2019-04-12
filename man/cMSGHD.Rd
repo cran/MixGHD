@@ -58,10 +58,10 @@
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\references{C. Tortora, B.C. Franczak, R.P. Browne, and  P.D. McNicholas (2014). A Mixture of Coalesced Generalized Hyperbolic Distributions. Arxiv preprint arXiv:1403.2332
+\references{C. Tortora, B.C. Franczak, R.P. Browne, and P.D. McNicholas (2019). A Mixture of Coalesced Generalized Hyperbolic Distributions. \emph{Journal of Classification} (to appear).
 %% ~put references to the literature/web site here ~
 }
-\author{Cristina Tortora, Aisha ElSherbiny, Ryan P. Browne,  and Paul D. McNicholas.
+\author{Cristina Tortora, Aisha ElSherbiny, Ryan P. Browne, Brian C. Franczak, and Paul D. McNicholas.
 Maintainer: Cristina Tortora <cristina.tortora@sjsu.edu>%%  ~~who you are~~
 }
 \seealso{

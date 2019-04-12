@@ -30,7 +30,7 @@
 S4 method for plotting objects of \code{\link{MixGHD-class}}.}
 }
 }
-\author{Cristina Tortora.
+\author{Cristina Tortora, Aisha ElSherbiny, Ryan P. Browne, Brian C. Franczak, and Paul D. McNicholas.
 Maintainer: Cristina Tortora <cristina.tortora@sjsu.edu>%%  ~~who you are~~
 }
 \seealso{

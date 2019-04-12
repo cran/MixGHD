@@ -43,10 +43,10 @@ rMSGHD(n,p, mu=rep(0,p),alpha=rep(0,p),sigma=diag(p),omegav=rep(1,p),lambdav=rep
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 
-\references{C. Tortora, B.C. Franczak, R.P. Browne, A. ElSherbiny, and  P.D. McNicholas (2014). Mixture of Multiple Scaled Generalized Hyperbolic Distributions. Arxiv preprint arXiv:1403.2332v2
+\references{C. Tortora, B.C. Franczak, R.P. Browne, and P.D. McNicholas (2019). A Mixture of Coalesced Generalized Hyperbolic Distributions. \emph{Journal of Classification} (to appear).
 %% ~put references to the literature/web site here ~
 }
-\author{Cristina Tortora and Brian C. Franczak 
+\author{Cristina Tortora, Aisha ElSherbiny, Ryan P. Browne, Brian C. Franczak, and Paul D. McNicholas.
 Maintainer: Cristina Tortora <cristina.tortora@sjsu.edu>%%  ~~who you are~~
 }
 \examples{

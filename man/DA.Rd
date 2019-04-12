@@ -48,11 +48,12 @@
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\references{R.P. Browne, and  P.D. McNicholas (2013). A Mixture of  Generalized Hyperbolic Distributions. Arxiv preprint arXiv:1305.1036\cr
-C. Tortora, B.C. Franczak, R.P. Browne, and  P.D. McNicholas (2014). A Mixture of Coalesced Generalized Hyperbolic Distributions. Arxiv preprint arXiv:1403.2332 \cr
-C. Tortora,  P.D. McNicholas, and R.P. Browne (2014). A Mixture of Generalized Hyperbolic Factor Analyzers. Arxiv preprint arXiv:1311.6530%% ~put references to the literature/web site here ~
+\references{R.P. Browne, and  P.D. McNicholas (2015). A Mixture of  Generalized Hyperbolic Distributions. \emph{Canadian Journal of Statistics}, 43.2 176-198.\cr
+C. Tortora, B.C. Franczak, R.P. Browne, and P.D. McNicholas (2019). A Mixture of Coalesced Generalized Hyperbolic Distributions. \emph{Journal of Classification} (to appear). \cr
+C.Tortora, P.D. McNicholas, and R.P. Browne (2016). Mixtures of Generalized Hyperbolic Factor Analyzers. 
+\emph{Advanced in data analysis and classification} 10(4) p.423-440.%% ~put references to the literature/web site here ~
 }
-\author{Cristina Tortora
+\author{Cristina Tortora, Aisha ElSherbiny, Ryan P. Browne, Brian C. Franczak, and Paul D. McNicholas.
 	Maintainer: Cristina Tortora <cristina.tortora@sjsu.edu>%%  ~~who you are~~
 }
 \seealso{ \code{"\link[=MixGHD-class]{MixGHD}"} 
