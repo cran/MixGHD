@@ -47,7 +47,7 @@ rMSGHD <- function(n,p,mu=rep(0,p),alpha=rep(0,p),sigma=diag(p),omegav=rep(1,p),
       ww[j,1]=w}
     wd=diag(p)
     diag(wd)=ww
-    x[i,] = t(wd%*%(alpha))+t(sqrt(wd)%*%t((rnorm(p))%*%(gam%*%sigma%*%phi%*%t(gam))))
+    x[i,] = t(wd%*%(alpha))+(rnorm(p)%*%(gam%*%wd%*%phi%*%t(gam)))
   }
   
   

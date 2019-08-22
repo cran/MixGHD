@@ -86,7 +86,8 @@ maincMSGHD<-function(data=NULL, gpar0=NULL, G, n, label  ,eps, method,nr=NULL ) 
     ICL=BIC+2*sum(log(apply(z,1,max)))
     AIC=2*temp[[1]][i]-2*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
     AIC3=2*temp[[1]][i]-3*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
-    val = list(loglik= temp[[1]], gpar=temp[[2]], z=z, map=map, BIC=BIC,ICL=ICL,AIC=AIC,AIC3=AIC3)
+    par=partrue(temp[[2]],G)
+    val = list(loglik= temp[[1]], gpar=temp[[2]],par=par, z=z, map=map, BIC=BIC,ICL=ICL,AIC=AIC,AIC3=AIC3)
     return(val)
 
 }
@@ -130,7 +131,7 @@ for(b in 1:t){
     }
 }
 # val=list(BIC=BIC,model=model)
-val=MixGHD(Index=BIC,AIC=model$AIC,AIC3=model$AIC3,BIC=model$BIC,ICL=model$ICL, map=model$map, gpar=model$gpar, loglik=model$loglik, z=model$z, method="cMSGHD",data=as.data.frame(data),scale=scale)
+val=MixGHD(Index=BIC,AIC=model$AIC,AIC3=model$AIC3,BIC=model$BIC,ICL=model$ICL, map=model$map, gpar=model$gpar,par=model$par, loglik=model$loglik, z=model$z, method="cMSGHD",data=as.data.frame(data),scale=scale)
 cat("The best model (BIC) for the range of  components used is  G = ", sg,".\nThe BIC for this model is ", bico,".",sep="")
     return(val)}
 
@@ -156,7 +157,7 @@ else if(modelSel=="ICL"){
         }
     }
 #    val=list(ICL=ICL,model=model)
-    val=MixGHD(Index=ICL,AIC=model$AIC,AIC3=model$AIC3,BIC=model$BIC,ICL=model$ICL, map=model$map, gpar=model$gpar, loglik=model$loglik, z=model$z, method="cMSGHD",data=as.data.frame(data),scale=scale)
+    val=MixGHD(Index=ICL,AIC=model$AIC,AIC3=model$AIC3,BIC=model$BIC,ICL=model$ICL, map=model$map, gpar=model$gpar,par=model$par, loglik=model$loglik, z=model$z, method="cMSGHD",data=as.data.frame(data),scale=scale)
     cat("The best model (ICL) for the range of  components used is  G = ", sg,".\nThe ICL for this model is ", bico,".",sep="")
     return(val)}
 else if(modelSel=="AIC3"){
@@ -179,7 +180,7 @@ else if(modelSel=="AIC3"){
         }
     }
 #    val=list(AIC3=AIC3,model=model)
-    val=MixGHD(Index=AIC3,AIC=model$AIC,AIC3=model$AIC3,BIC=model$BIC,ICL=model$ICL, map=model$map, gpar=model$gpar, loglik=model$loglik, z=model$z, method="cMSGHD",data=as.data.frame(data),scale=scale)
+    val=MixGHD(Index=AIC3,AIC=model$AIC,AIC3=model$AIC3,BIC=model$BIC,ICL=model$ICL, map=model$map, gpar=model$gpar,par=model$par, loglik=model$loglik, z=model$z, method="cMSGHD",data=as.data.frame(data),scale=scale)
     cat("The best model (AIC3) for the range of  components used is  G = ", sg,".\nThe AIC3 for this model is ", bico,".",sep="")
     return(val)}
 else {
@@ -201,7 +202,7 @@ else {
             model=mo
         }
     }
-    val=MixGHD(Index=AIC,AIC=model$AIC,AIC3=model$AIC3,BIC=model$BIC,ICL=model$ICL, map=model$map, gpar=model$gpar, loglik=model$loglik, z=model$z, method="cMSGHD",data=as.data.frame(data),scale=scale)
+    val=MixGHD(Index=AIC,AIC=model$AIC,AIC3=model$AIC3,BIC=model$BIC,ICL=model$ICL, map=model$map, gpar=model$gpar,par=model$par, loglik=model$loglik, z=model$z, method="cMSGHD",data=as.data.frame(data),scale=scale)
     cat("The best model (AIC) for the range of  components used is  G = ", sg,".\nThe AIC for this model is ", bico,".",sep="")
     return(val)}
 

@@ -3,11 +3,14 @@
 ########################################################################################
 ############################## Extract things ###########################################
 ########################################################################################
+coef.MixGHD=function(object,...){
+  coef=object@gpar 
+  return(coef)}
 
-coef=function(input){coef=input@gpar 
-return(coef)}
-predict=function(input){predict=input@map
+predict.MixGHD=function(object,...){
+  predict=object@map
 return(predict)}
+setGeneric("predict") 
 ########################################################################################
 ############################## Common functions###########################################
 ########################################################################################
@@ -162,15 +165,16 @@ partrue<-function(gpar,G=2){
     grpraT=list()
     for(i in 1:G){
         par=gpar[[i]]
-        sort=sort.int(par$phi,decreasing=T,index.return=T)
-        par$phi=sort$x
-        par$gam=par$gam[,sort$ix]
+        #sort=sort.int(par$phi,decreasing=T,index.return=T)
+       # par$phi=sort$x
+      #  par$gam=par$gam[,sort$ix]
         
         gam=gpar[[i]]$gam
         
         par$mu=par$mu%*%t(gam)
         par$alpha=par$alpha%*%t(gam)
-        #par$Sigma=gam%*%diag(par$sigma)%*%t(gam)
+        pp=diag(ncol(gam))*par$phi
+        par$Sigma=gam%*%pp%*%t(gam)
         
         gparT[[i]]=par
     }

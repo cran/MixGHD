@@ -44,10 +44,10 @@
 }
 \value{A S4 object of class \link{MixGHD} with slots:
 	\item{index}{Value of the index used for model selection (AIC or ICL or BIC or AIC3) for each G,the index used is specified by the user, if not specified AIC is used.}
-	\item{BIC}{Bayesian information criterion value.}
-	\item{ICL}{ICL index.}
-	\item{AIC}{AIC index.}
-	\item{AIC3}{AIC3 index.}
+	\item{BIC}{Bayesian information criterion.}
+	\item{ICL}{Integrated completed likelihood.}
+	\item{AIC}{Akaike information criterion.}
+	\item{AIC3}{Akaike information criterion 3.}
 	\item{gpar}{A list of the model parameters }
 	\item{loglik}{The log-likelihood values.}
 	\item{map}{A vector of integers indicating the maximum a posteriori classifications for the best model.}

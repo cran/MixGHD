@@ -1,18 +1,21 @@
 \name{coef}
-\alias{coef}
+\alias{coef.MixGHD}
+\alias{coef,MixGHD-method}
+\alias{coef,MixGHD,missing-method}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Coefficients
+\title{Coefficients for objects of class MixGHD
 %%  ~~function to do ... ~~
 }
 \description{Coefficents of the estimated model.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-coef(input)
+	\S4method{coef}{MixGHD}(object)
+
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
- \item{input}{ An S4 object of class \link{MixGHD}.%%     ~~Describe \code{x} here~~
+ \item{object}{ An S4 object of class \link{MixGHD}.%%     ~~Describe \code{x} here~~
 }
 }
 \value{The coefficents of the estimated model

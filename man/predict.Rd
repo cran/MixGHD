@@ -1,18 +1,21 @@
 \name{predict}
-\alias{predict}
+\alias{predict.MixGHD}
+\alias{predict,MixGHD-method}
+\alias{predict,MixGHD,missing-method}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Membership prediction
+\title{Membership prediction for objects of class MixGHD
 %%  ~~function to do ... ~~
 }
 \description{Cluster membership 
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-predict(input)
+	\S4method{predict}{MixGHD}(object)
+
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
- \item{input}{ An S4 object of class \link{MixGHD}.%%     ~~Describe \code{x} here~~
+ \item{object}{ An S4 object of class \link{MixGHD}.%%     ~~Describe \code{x} here~~
 }
 }
 \value{The cluster membership 

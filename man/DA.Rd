@@ -70,7 +70,7 @@ train=banknote[c(1:74,126:200),]
 test=banknote[75:125,]
 
 ##model estimation
- model=DA(train[,2:7],train[,1],test[,2:7],test[,1],method="MSGHD",max.iter=20)
+ model=DA(train[,2:7],train[,1],test[,2:7],test[,1],method="MGHD",max.iter=20)
 
 #result
 model$ARItest}

@@ -45,7 +45,7 @@ label =NULL  ,q=2,eps=1e-2 , method="kmeans", scale=TRUE ,nr=10)
 }
 \value{A S4 object of class \link{MixGHD}  with slots:
 	\item{Index}{Bayesian information criterion value for each combination of G and q.}
-	\item{BIC}{Bayesian information criterion value.}
+	\item{BIC}{Bayesian information criterion.}
 	\item{gpar}{A list of the model parameters. }
 	\item{loglik}{The log-likelihood values.}
 	\item{map}{A vector of integers indicating the maximum a posteriori classifications for the best model.}
