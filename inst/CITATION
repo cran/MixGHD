@@ -1,0 +1,23 @@
+bibentry(bibtype = "Article",
+  title        = "Model-Based Clustering, Classification, and Discriminant Analysis Using the Generalized Hyperbolic Distribution: {MixGHD} {R} package",
+  author       = c(person(given = "Cristina",
+                          family = "Tortora",
+                          email = "cristina.tortora@sjsu.edu"),
+                   person(given = c("Ryan", "P."),
+                          family = "Browne"),
+                   person(given = "Aisha",
+                          family = "ElSherbiny"),
+                   person(given = c("Brian", "C."),
+                          family = "Franczak"),
+                   person(given = c("Paul", "D."),
+                          family = "McNicholas")),
+  journal      = "Journal of Statistical Software",
+  year         = "2021",
+  volume       = "98",
+  number       = "3",
+  pages        = "1--24",
+  doi          = "10.18637/jss.v098.i03",
+
+  header       = "To cite MixGHD in publications use:"
+)
+

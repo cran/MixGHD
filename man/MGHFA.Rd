@@ -57,7 +57,8 @@ label =NULL  ,q=2,eps=1e-2 , method="kmeans", scale=TRUE ,nr=10)
 %% ...
 }
 \references{C.Tortora, P.D. McNicholas, and R.P. Browne (2016). Mixtures of Generalized Hyperbolic Factor Analyzers. 
-\emph{Advanced in data analysis and classification} 10(4) p.423-440.
+\emph{Advanced in data analysis and classification} 10(4) p.423-440.\\
+C. Tortora, R. P. Browne,  A. ElSherbiny, B. C. Franczak, and P. D. McNicholas (2021). Model-Based Clustering, Classification, and Discriminant Analysis using the Generalized Hyperbolic Distribution: MixGHD R package, \emph{Journal of Statistical Software} 98(3) 1--24,  <doi:10.18637/jss.v098.i03>.
 %% ~put references to the literature/web site here ~
 }
 \author{Cristina Tortora, Aisha ElSherbiny, Ryan P. Browne, Brian C. Franczak, and Paul D. McNicholas.

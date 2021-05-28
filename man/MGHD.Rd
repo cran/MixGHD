@@ -58,7 +58,8 @@ method="kmeans",scale=TRUE,nr=10, modelSel="AIC")
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\references{R.P. Browne, and  P.D. McNicholas (2015). A Mixture of  Generalized Hyperbolic Distributions. \emph{Canadian Journal of Statistics}, 43.2 176-198
+\references{R.P. Browne, and  P.D. McNicholas (2015). A Mixture of  Generalized Hyperbolic Distributions. \emph{Canadian Journal of Statistics}, 43.2 176-198\\
+C. Tortora, R. P. Browne,  A. ElSherbiny, B. C. Franczak, and P. D. McNicholas (2021). Model-Based Clustering, Classification, and Discriminant Analysis using the Generalized Hyperbolic Distribution: MixGHD R package, \emph{Journal of Statistical Software} 98(3) 1--24,  <doi:10.18637/jss.v098.i03>.
 %% ~put references to the literature/web site here ~
 }
 \author{Cristina Tortora, Aisha ElSherbiny, Ryan P. Browne, Brian C. Franczak, and Paul D. McNicholas.

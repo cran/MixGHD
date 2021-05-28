@@ -58,7 +58,8 @@
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\references{C. Tortora, B.C. Franczak, R.P. Browne, and P.D. McNicholas (2019). A Mixture of Coalesced Generalized Hyperbolic Distributions. \emph{Journal of Classification} (to appear).
+\references{C. Tortora, B.C. Franczak, R.P. Browne, and P.D. McNicholas (2019). A Mixture of Coalesced Generalized Hyperbolic Distributions. \emph{Journal of Classification} 36(1) 26-57.\\
+C. Tortora, R. P. Browne,  A. ElSherbiny, B. C. Franczak, and P. D. McNicholas (2021). Model-Based Clustering, Classification, and Discriminant Analysis using the Generalized Hyperbolic Distribution: MixGHD R package, \emph{Journal of Statistical Software} 98(3) 1--24,  <doi:10.18637/jss.v098.i03>.
 %% ~put references to the literature/web site here ~
 }
 \author{Cristina Tortora, Aisha ElSherbiny, Ryan P. Browne, Brian C. Franczak, and Paul D. McNicholas.
