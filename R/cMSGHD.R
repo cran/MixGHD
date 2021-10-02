@@ -1,51 +1,4 @@
-     run_EMstepMSr <- function(data = NULL, gpar = NULL, loglik=NULL, maxit=NULL, N= NULL, p=NULL, G=NULL, eps=NULL, label=NULL){
-     counter = 0
-     mu = matrix(0,nrow=G,ncol=p)
-     phi= matrix(0,nrow=G,ncol=p)
-     alpha= matrix(0,nrow=G,ncol=p)
-     cplr = matrix(0,nrow=G,ncol=p*2)
-     gamr = matrix(0,nrow=G,ncol=p*p)
-     for(k in 1:G){
-     par = gpar[[k]]
-     mu[k,] = par$mu
-     phi[k,] = par$phi
-     alpha[k,]= par$alpha
-     cplr[k,] = c(t(par$cpl))
-     gamr[k,] = c(t(par$gam))
-     }
-     pi = gpar$pi
-     v = 1
-     mu1=t(mu)
-     phi1=t(phi)
-     alpha1=t(alpha)
-     gam1=t(gamr)
-     cpl1=t(cplr)
-     if(is.null(label) ==T) label=rep(0,N)
-     EMSr <- .C("EMstepSr", as.double(mu1), as.double(phi1), as.double(alpha1),
-             as.double(cpl1), as.double(gam1), as.double(data), as.double(loglik), as.integer(maxit), as.integer(N), as.integer(p), as.integer(G),
-as.double(eps), as.integer(label), as.double(pi), as.integer(v),
-         as.integer(counter), PACKAGE="MixGHD")
-     loglik = EMSr[[7]]
-     counter = EMSr[[16]]
-     mu = matrix(EMSr[[1]],nrow =G, ncol=p, byrow=TRUE)
-     phi= matrix(EMSr[[2]], nrow=G, ncol=p, byrow=TRUE)
-     alpha= matrix(EMSr[[3]], nrow=G, ncol=p, byrow=TRUE)
-     cpl = array(EMSr[[4]],dim=c(p,2,G))
-     gam = array((EMSr[[5]]),dim=c(p,p,G))
-     gpar = list()
-     for(k in 1:G){
-        gpar[[k]] = list()
-        gpar[[k]]$mu = mu[k,]
-        gpar[[k]]$phi= phi[k,]
-        gpar[[k]]$alpha = alpha[k,]
-        gpar[[k]]$cpl = matrix(cpl[,,k], nrow=p, ncol=2, byrow=TRUE)
-        gpar[[k]]$gam = matrix(gam[,,k], nrow=p, ncol=p, byrow=TRUE)
-     }
-     gpar$pi = EMSr[[14]]
-     val = list(loglik,gpar,counter)
-     return(val)
-}
-
+  
 maincMSGHD<-function(data=NULL, gpar0=NULL, G, n, label  ,eps, method,nr=NULL ) {
     pcol=ncol(data)
     if(!is.null(label)){
@@ -72,22 +25,21 @@ maincMSGHD<-function(data=NULL, gpar0=NULL, G, n, label  ,eps, method,nr=NULL ) 
         gpar = EMgrstepMSr(data=data, gpar=gpar, v=1, label = label,it=i)
         loglik[i] = llikMS(data, gpar)
     }
-       N = nrow(data)
-       p = ncol(data)
-       maxit = n
-       temp <- run_EMstepMSr(data, gpar, loglik, maxit, N, p, G, eps, label)
-       i = temp[[3]]
+    while ( ( getall(loglik[1:i]) > eps) & (i < (n) ) )  {
+      i = i+1
+      gpar = EMgrstepMSr(data=data, gpar=gpar, v=1, label = label,it=i)
+      loglik[i] = llikMS(data, gpar)
+    }
 
-
-    if(i<n){temp[[1]]=temp[[1]][-(i+1:n)]}
-    BIC=2*temp[[1]][i]-log(nrow(data))*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
-    z=weightsMS(data=data, gpar= temp[[2]])
-    map=MAPMS(data=data, gpar= temp[[2]], label=label)
+    if(i<n){loglik=loglik[-(i+1:n)]}
+    BIC=2*loglik[i]-log(nrow(data))*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
+    z=weightsMS(data=data, gpar= gpar)
+    map=MAPMS(data=data, gpar= gpar, label=label)
     ICL=BIC+2*sum(log(apply(z,1,max)))
-    AIC=2*temp[[1]][i]-2*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
-    AIC3=2*temp[[1]][i]-3*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
-    par=partrue(temp[[2]],G)
-    val = list(loglik= temp[[1]], gpar=temp[[2]],par=par, z=z, map=map, BIC=BIC,ICL=ICL,AIC=AIC,AIC3=AIC3)
+    AIC=2*loglik[i]-2*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
+    AIC3=2*loglik[i]-3*((G-1)+G*(4*pcol+pcol*(pcol-1)/2))
+    par=partrue(gpar,G)
+    val = list(loglik= loglik, gpar=gpar, z=z, map=map, par=par,BIC=BIC,ICL=ICL,AIC=AIC,AIC3=AIC3)
     return(val)
 
 }

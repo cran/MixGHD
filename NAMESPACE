@@ -1,8 +1,4 @@
-useDynLib(MixGHD,EMstepFA)
-useDynLib(MixGHD,EMstep)
-useDynLib(MixGHD,EMstepSr)
-useDynLib(MixGHD,EMstepMS)
-useDynLib(MixGHD,EMstepGH)
+
 import(ghyp)
 import(MASS)
 importFrom("methods", "new")
